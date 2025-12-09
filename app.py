@@ -6,17 +6,18 @@ import os
 from functools import wraps
 from dotenv import load_dotenv
 
-#-- Configuracion --
+# --- Configuración general ---
 load_dotenv()
+
 app = Flask(__name__)
-
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "cambia_esta_clave")
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = False  # puede cambiar a true en producción con HTTPS
 
+# Configuración cookies sesión
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = False  # Cambiar a True en producción
 
-#-- Conexion a oracle --
+# --- Conexión a ORACLE ---
 def get_connection():
     return oracledb.connect(
         user=os.getenv("DB_USER"),
@@ -25,22 +26,22 @@ def get_connection():
         encoding="UTF-8"
     )
 
+# --- Seguridad de contraseñas ---
+def hash_password(plain_password: str) -> bytes:
+    if not isinstance(plain_password, str):
+        raise ValueError("La contraseña debe ser un string")
+    return bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt())
 
-#-- Aqui hago el hashing --
-def hash_password(plain_password: str) -> str:
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(plain_password.encode("utf-8"), salt)
-    return hashed.decode("utf-8")
+def check_password(plain_password: str, hashed: bytes) -> bool:
+    if not isinstance(plain_password, str):
+        return False
+    if hashed is None:
+        return False
+    if isinstance(hashed, str):
+        hashed = hashed.encode("utf-8")
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed)
 
-def check_password(plain_password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(
-        plain_password.encode("utf-8"),
-        hashed.encode("utf-8") if isinstance(hashed, str) else hashed
-    )
-
-
-# -- Middleware para seguridad --
-
+# --- Middlewares ---
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -60,8 +61,8 @@ def admin_required(f):
         return f(*args, **kwargs)
     return wrapper
 
-#-- Registro --
-@app.route('/register', methods=['POST'])
+# --- Registro ---
+@app.route("/register", methods=["POST"])
 def register():
     data = request.json or {}
 
@@ -69,41 +70,54 @@ def register():
     password = data.get("clave")
     nombre = data.get("nombre")
     apellido = data.get("apellido")
-    tipo = data.get("tipo", "paciente").lower()
+    tipo = (data.get("tipo", "paciente") or "").lower()
 
-    roles_validos = ["paciente", "medico", "admin"]
+    ROLES = ["paciente", "medico", "admin"]
 
-    if tipo not in roles_validos:
-        return jsonify({"error": "tipo de usuario inválido"}), 400
+    if tipo not in ROLES:
+        return jsonify({"error": "tipo inválido", "roles": ROLES}), 400
 
-    if not username or not password or not nombre or not apellido:
-        return jsonify({"error": "faltan datos obligatorios"}), 400
+    if not all([username, password, nombre, apellido]):
+        return jsonify({"error": "faltan datos"}), 400
 
-    hashed = hash_password(password)
+    # Garantizar que password sea un string
+    if not isinstance(password, str):
+        return jsonify({"error": "contraseña inválida"}), 400
+
+    try:
+        hashed = hash_password(password)
+    except Exception:
+        return jsonify({"error": "contraseña inválida"}), 400
 
     sql = """
         INSERT INTO usuario (nombre_usuario, clave, nombre, apellido, tipo)
         VALUES (:u, :c, :n, :a, :t)
     """
 
+    conn = None
+    cur = None
     try:
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(sql, [username, hashed, nombre, apellido, tipo])
         conn.commit()
-        cur.close()
-        conn.close()
 
         return jsonify({"ok": True, "mensaje": "usuario registrado"}), 201
 
     except oracledb.IntegrityError:
-        return jsonify({"error": "nombre de usuario ya existe"}), 409
+        return jsonify({"error": "usuario ya existe"}), 409
+
     except Exception as e:
-        return jsonify({"error": "error del servidor", "detalle": str(e)}), 500
+        return jsonify({"error": "error servidor", "detalle": str(e)}), 500
 
-#-- Login -- 
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
-@app.route('/login', methods=['POST'])
+# --- Login ---
+@app.route("/login", methods=["POST"])
 def login():
     data = request.json or {}
 
@@ -119,6 +133,8 @@ def login():
         WHERE nombre_usuario = :u
     """
 
+    conn = None
+    cur = None
     try:
         conn = get_connection()
         cur = conn.cursor()
@@ -133,69 +149,73 @@ def login():
         if not check_password(password, hashed):
             return jsonify({"error": "clave incorrecta"}), 401
 
-        # Guardar en sesión
         session["user"] = {
             "id": user_id,
             "nombre_usuario": nombre_usuario,
             "tipo": tipo
         }
 
-        cur.close()
-        conn.close()
-
-        return jsonify({
-            "ok": True,
-            "mensaje": "inicio de sesión exitoso",
-            "tipo": tipo
-        }), 200
+        return jsonify({"ok": True, "mensaje": "login exitoso", "tipo": tipo}), 200
 
     except Exception as e:
         return jsonify({"error": "error interno", "detalle": str(e)}), 500
 
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
-#-- Para deslogear --
-@app.route('/logout', methods=['POST'])
+# --- Logout ---
+@app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
     return jsonify({"ok": True, "mensaje": "sesión cerrada"}), 200
 
-
-@app.route('/me', methods=['GET'])
+# --- Usuario autenticado ---
+@app.route("/me", methods=["GET"])
 @login_required
 def me():
-    user = session["user"]
     sql = """
         SELECT id, nombre_usuario, nombre, apellido, tipo
         FROM usuario
         WHERE id = :id
     """
 
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(sql, [user["id"]])
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
+    conn = None
+    cur = None
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(sql, [session["user"]["id"]])
+        row = cur.fetchone()
 
-    if not row:
-        return jsonify({"error": "usuario no encontrado"}), 404
+        if not row:
+            return jsonify({"error": "usuario no encontrado"}), 404
 
-    return jsonify({
-        "id": row[0],
-        "nombre_usuario": row[1],
-        "nombre": row[2],
-        "apellido": row[3],
-        "tipo": row[4]
-    }), 200
+        return jsonify({
+            "id": row[0],
+            "nombre_usuario": row[1],
+            "nombre": row[2],
+            "apellido": row[3],
+            "tipo": row[4]
+        }), 200
 
+    except Exception as e:
+        return jsonify({"error": "error servidor", "detalle": str(e)}), 500
 
-#-- Panel del admin --
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+# --- Panel admin ---
 @app.route("/admin/panel", methods=["GET"])
 @admin_required
 def admin_panel():
     return jsonify({"ok": True, "mensaje": "Bienvenido al panel admin"}), 200
 
-
-
+# --- Ejecutar ---
 if __name__ == "__main__":
     app.run(debug=True)
