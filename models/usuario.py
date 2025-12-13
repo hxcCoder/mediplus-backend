@@ -11,14 +11,16 @@ class Usuario:
         self.email = email
         self.tipo = tipo  # paciente / medico / admin
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "nombre_usuario": self.nombre_usuario,
-            "nombre": self.nombre,
-            "apellido": self.apellido,
-            "fecha_nacimiento": self.fecha_nacimiento,
-            "telefono": self.telefono,
-            "email": self.email,
-            "tipo": self.tipo
-        }
+    # BIEN: nunca devolver la clave
+def to_dict(self):
+    return {
+        "id": self.id,
+        "nombre_usuario": self.nombre_usuario,
+        "nombre": self.nombre,
+        "apellido": self.apellido,
+        "fecha_nacimiento": self.fecha_nacimiento,
+        "telefono": self.telefono,
+        "email": self.email,
+        "tipo": self.tipo
+    }
+
