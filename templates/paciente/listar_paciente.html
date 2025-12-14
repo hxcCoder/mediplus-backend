@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Pacientes</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        a { text-decoration: none; color: #007bff; margin-right: 8px; }
+        a:hover { text-decoration: underline; }
+        .btn-crear { display: inline-block; margin: 10px 0; padding: 8px 12px; background-color: #28a745; color: white; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h2>Listado de Pacientes</h2>
+    <a href="{{ url_for('paciente.crear_paciente') }}" class="btn-crear">Crear Paciente</a>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Comuna</th>
+            <th>Acciones</th>
+        </tr>
+        {% for p in pacientes %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.nombre_usuario }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.apellido }}</td>
+            <td>{{ p.email }}</td>
+            <td>{{ p.comuna }}</td>
+            <td>
+                <a href="{{ url_for('paciente.editar_paciente', paciente_id=p.id) }}">Editar</a>
+                <a href="{{ url_for('paciente.eliminar_paciente', paciente_id=p.id) }}">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

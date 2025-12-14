@@ -1,0 +1,6 @@
+Changelog:
+- Corregido login y hashing de contraseñas
+- Normalizada sesión del usuario
+- Añadidos controladores y vistas para insumo, receta, consulta y agenda
+- Añadidos tests unitarios para security, auth, insumo, receta, paciente, medico, admin
+- Añadido script para generar PDF con reflexión

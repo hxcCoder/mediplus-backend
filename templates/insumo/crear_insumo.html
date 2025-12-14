@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Insumo - MediPlus</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        .container { max-width: 400px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; }
+        input { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 10px; margin-top: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .flash { color: red; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Crear Insumo</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('insumo.crear_insumo_action') }}" method="POST">
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="tipo" placeholder="Tipo" required>
+            <input type="number" name="stock" placeholder="Stock" required>
+            <input type="number" step="0.01" name="costo_usd" placeholder="Costo USD" required>
+            <button type="submit">Crear</button>
+        </form>
+    </div>
+</body>
+</html>

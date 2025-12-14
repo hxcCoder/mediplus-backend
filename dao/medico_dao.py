@@ -10,9 +10,7 @@ class MedicoDAO:
 
         conn = get_connection()
         cursor = conn.cursor()
-
         hashed = bcrypt.hashpw(medico.clave.encode("utf-8"), bcrypt.gensalt())
-
         sql = """
             INSERT INTO usuario 
             (nombre_usuario, clave, nombre, apellido, fecha_nacimiento, telefono, email, tipo, especialidad)
@@ -36,14 +34,11 @@ class MedicoDAO:
     def obtener_por_id(self, medico_id: int) -> Medico | None:
         conn = get_connection()
         cursor = conn.cursor()
-
         sql = "SELECT * FROM usuario WHERE id=:id AND tipo='medico'"
         cursor.execute(sql, {"id": medico_id})
         row = cursor.fetchone()
-
         cursor.close()
         conn.close()
-
         if row:
             return Medico(
                 id=row[0],
@@ -62,14 +57,11 @@ class MedicoDAO:
     def listar(self) -> list[Medico]:
         conn = get_connection()
         cursor = conn.cursor()
-
         cursor.execute("SELECT * FROM usuario WHERE tipo='medico' ORDER BY id")
         rows = cursor.fetchall()
-
         cursor.close()
         conn.close()
-
-        medicos = [
+        return [
             Medico(
                 id=r[0],
                 nombre_usuario=r[1],
@@ -81,41 +73,39 @@ class MedicoDAO:
                 email=r[7],
                 tipo=r[8],
                 especialidad=r[9]
-            )
-            for r in rows
+            ) for r in rows
         ]
-        return medicos
 
-def actualizar(self, medico: Medico) -> bool:
-    conn = get_connection()
-    cursor = conn.cursor()
-    sql = """
-        UPDATE usuario
-        SET nombre_usuario=:1, nombre=:2, apellido=:3,
-            fecha_nacimiento=:4, telefono=:5, email=:6,
-            especialidad=:7
-        WHERE id=:8 AND tipo='medico'
-    """
-    cursor.execute(sql, [
-        medico.nombre_usuario,
-        medico.nombre,
-        medico.apellido,
-        medico.fecha_nacimiento,
-        medico.telefono,
-        medico.email,
-        medico.especialidad,
-        medico.id
-    ])
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return True
+    def actualizar(self, medico: Medico) -> bool:
+        conn = get_connection()
+        cursor = conn.cursor()
+        sql = """
+            UPDATE usuario
+            SET nombre_usuario=:1, nombre=:2, apellido=:3,
+                fecha_nacimiento=:4, telefono=:5, email=:6,
+                especialidad=:7
+            WHERE id=:8 AND tipo='medico'
+        """
+        cursor.execute(sql, [
+            medico.nombre_usuario,
+            medico.nombre,
+            medico.apellido,
+            medico.fecha_nacimiento,
+            medico.telefono,
+            medico.email,
+            medico.especialidad,
+            medico.id
+        ])
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
 
-def eliminar(self, medico_id: int) -> bool:
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM usuario WHERE id=:id AND tipo='medico'", {"id": medico_id})
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return True
+    def eliminar(self, medico_id: int) -> bool:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM usuario WHERE id=:id AND tipo='medico'", {"id": medico_id})
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True

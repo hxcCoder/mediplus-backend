@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Administrador</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        .container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 10px; margin-top: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        .flash { color: red; text-align: center; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Editar Administrador</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('administrador.editar_administrador', admin_id=administrador.id) }}" method="POST">
+            <input type="text" name="nombre_usuario" value="{{ administrador.nombre_usuario }}" required>
+            <input type="text" name="nombre" value="{{ administrador.nombre }}" required>
+            <input type="text" name="apellido" value="{{ administrador.apellido }}" required>
+            <input type="date" name="fecha_nacimiento" value="{{ administrador.fecha_nacimiento }}">
+            <input type="text" name="telefono" value="{{ administrador.telefono }}">
+            <input type="email" name="email" value="{{ administrador.email }}">
+            <button type="submit">Actualizar Administrador</button>
+        </form>
+
+        <p style="text-align:center; margin-top: 12px;">
+            <a href="{{ url_for('administrador.listar_administradores') }}">Volver al listado</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Eliminar Médico - MediPlus</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        .container { max-width: 400px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; text-align: center; }
+        h2 { margin-bottom: 20px; }
+        button { padding: 10px 20px; margin: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-confirm { background-color: #dc3545; color: white; }
+        .btn-confirm:hover { background-color: #a71d2a; }
+        .btn-cancel { background-color: #6c757d; color: white; }
+        .btn-cancel:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Eliminar Médico</h2>
+        <p>¿Estás seguro que deseas eliminar al médico {{ medico.nombre }} {{ medico.apellido }}?</p>
+
+        <form action="{{ url_for('medico.eliminar_medico', medico_id=medico.id) }}" method="POST">
+            <button type="submit" class="btn-confirm">Sí, eliminar</button>
+            <a href="{{ url_for('medico.listar_medicos') }}" class="btn-cancel">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

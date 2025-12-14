@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Agenda - MediPlus</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        .container { max-width: 500px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        select, input { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 10px; margin-top: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        .flash { color: red; text-align: center; margin-bottom: 12px; }
+        a { display: block; text-align: center; margin-top: 12px; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Editar Agenda</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('agenda.editar_agenda_action', agenda_id=agenda.id) }}" method="POST">
+            <label>Médico:</label>
+            <select name="id_medico" required>
+                {% for medico in medicos %}
+                    <option value="{{ medico.id }}" {% if medico.id == agenda.id_medico %}selected{% endif %}>
+                        {{ medico.nombre }} {{ medico.apellido }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>Paciente:</label>
+            <select name="id_paciente" required>
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}" {% if paciente.id == agenda.id_paciente %}selected{% endif %}>
+                        {{ paciente.nombre }} {{ paciente.apellido }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>Fecha y Hora:</label>
+            <input type="datetime-local" name="fecha_hora" value="{{ agenda.fecha_hora|replace(' ', 'T') }}" required>
+
+            <button type="submit">Actualizar</button>
+        </form>
+
+        <a href="{{ url_for('agenda.listar_agenda') }}">Volver a la lista</a>
+    </div>
+</body>
+</html>
+    

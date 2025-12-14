@@ -1,0 +1,7 @@
+Reflexión del autor:
+
+Trabajé en este proyecto en un solo día, con apoyo de herramientas de IA que me ayudaron a identificar y aplicar buenas prácticas (hashing seguro, manejo de sesiones, tests, y separación de responsabilidades). Realicé varias refactorizaciones y aprendí mucho sobre la arquitectura MVC, pruebas unitarias y cómo desacoplar la lógica de acceso a datos para facilitar testing (inyección de DAOs y lazy imports).
+
+Reconozco que apoyarme en IA me permitió avanzar más rápido; mi intención fue entender cada cambio y asegurar que el resultado sea funcional y seguro. Mañana revisaré con calma las decisiones de diseño, terminaré los CRUDs restantes y prepararé la integración con la base de datos Oracle si lo desea el profesor.
+
+Si el profesor prefiere algo más conservador (menos funcionalidades), puedo reducir el conjunto de features o documentar claramente qué partes son prototipo y cuáles están listas para producción.

@@ -1,138 +1,22 @@
-# controllers/paciente_controller.py
-from db.connection import get_connection
+# controller/paciente_c.py
+from dao.paciente_dao import PacienteDAO
 from models.paciente import Paciente
-import bcrypt
 
 class PacienteController:
+    def __init__(self):
+        self.dao = PacienteDAO()
 
-
-    # Crear paciente
     def crear_paciente(self, paciente: Paciente):
-        if not paciente.clave:
-            raise ValueError("La clave no puede ser None.")
+        return self.dao.crear(paciente)
 
-        conn = get_connection()
-        cursor = conn.cursor()
+    def obtener_paciente(self, paciente_id: int) -> Paciente | None:
+        return self.dao.obtener_por_id(paciente_id)
 
-        hashed = bcrypt.hashpw(paciente.clave.encode("utf-8"), bcrypt.gensalt())
+    def listar_pacientes(self) -> list[Paciente]:
+        return self.dao.listar()
 
-        sql = """
-            INSERT INTO usuario 
-            (nombre_usuario, clave, nombre, apellido, fecha_nacimiento, telefono, email, tipo, comuna, fecha_primera_visita)
-            VALUES (:1, :2, :3, :4, :5, :6, :7, 'paciente', :8, :9)
-        """
-
-        cursor.execute(sql, [
-            paciente.nombre_usuario,
-            hashed,
-            paciente.nombre,
-            paciente.apellido,
-            paciente.fecha_nacimiento,
-            paciente.telefono,
-            paciente.email,
-            paciente.comuna,
-            paciente.fecha_primera_visita
-        ])
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
-
-
-    # Obtener paciente por ID
-    def obtener_por_id(self, paciente_id):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        sql = "SELECT * FROM usuario WHERE id = :id AND tipo='paciente'"
-        cursor.execute(sql, {"id": paciente_id})
-        row = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-
-        if row:
-            return Paciente(**{
-                "id": row[0],
-                "nombre_usuario": row[1],
-                "clave": row[2],
-                "nombre": row[3],
-                "apellido": row[4],
-                "fecha_nacimiento": row[5],
-                "telefono": row[6],
-                "email": row[7],
-                "tipo": row[8],
-                "comuna": row[9],
-                "fecha_primera_visita": row[10]
-            })
-        return None
-
-    # Listar todos los pacientes
-    def listar(self):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM usuario WHERE tipo='paciente' ORDER BY id")
-        rows = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        pacientes = []
-        for r in rows:
-            pacientes.append(Paciente(**{
-                "id": r[0],
-                "nombre_usuario": r[1],
-                "clave": r[2],
-                "nombre": r[3],
-                "apellido": r[4],
-                "fecha_nacimiento": r[5],
-                "telefono": r[6],
-                "email": r[7],
-                "tipo": r[8],
-                "comuna": r[9],
-                "fecha_primera_visita": r[10]
-            }))
-        return pacientes
-
-    # Actualizar paciente
     def actualizar_paciente(self, paciente: Paciente):
-        conn = get_connection()
-        cursor = conn.cursor()
+        return self.dao.actualizar(paciente)
 
-        sql = """
-            UPDATE usuario
-            SET nombre_usuario=:1, nombre=:2, apellido=:3,
-                fecha_nacimiento=:4, telefono=:5, email=:6,
-                comuna=:7, fecha_primera_visita=:8
-            WHERE id=:9 AND tipo='paciente'
-        """
-
-        cursor.execute(sql, [
-            paciente.nombre_usuario,
-            paciente.nombre,
-            paciente.apellido,
-            paciente.fecha_nacimiento,
-            paciente.telefono,
-            paciente.email,
-            paciente.comuna,
-            paciente.fecha_primera_visita,
-            paciente.id
-        ])
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
-
-    # Eliminar paciente
-
-    def eliminar(self, paciente_id):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("DELETE FROM usuario WHERE id=:id AND tipo='paciente'", {"id": paciente_id})
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-        return True
+    def eliminar_paciente(self, paciente_id: int):
+        return self.dao.eliminar(paciente_id)

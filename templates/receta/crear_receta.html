@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Receta - MediPlus</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        .container { max-width: 500px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 10px; margin-top: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .flash { color: red; text-align: center; margin-bottom: 12px; }
+        a { display: block; text-align: center; margin-top: 12px; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Crear Receta</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('receta.crear_receta') }}" method="POST">
+            <input type="hidden" name="id_paciente" value="{{ paciente_id or '' }}">
+            <input type="hidden" name="id_medico" value="{{ medico_id or '' }}">
+            <label>Descripción:</label>
+            <textarea name="descripcion" placeholder="Descripción" rows="2" required></textarea>
+            <label>Medicamentos recetados:</label>
+            <input type="text" name="medicamentos_recetados" placeholder="Medicamentos" required>
+            <label>Costo (CLP):</label>
+            <input type="number" name="costo_clp" placeholder="Costo en CLP" required>
+            <label>Fecha:</label>
+            <input type="date" name="fecha" required>
+            <button type="submit">Crear</button>
+        </form>
+
+        <a href="{{ url_for('receta.listar_recetas') }}">Volver a la lista</a>
+    </div>
+</body>
+</html>

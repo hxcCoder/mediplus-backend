@@ -1,0 +1,7 @@
+REFLEXIÓN (borrador):
+
+He trabajado en el proyecto durante un día con apoyo de IA. Realicé refactorizaciones importantes, arreglé el flujo de autenticación, normalicé sesiones, y añadí pruebas unitarias para varias piezas. Aprendí a delegar dependencias (inyección y lazy imports) para facilitar los tests, y a equilibrar rapidez con calidad del código. Me siento más cómodo con la arquitectura MVC y con los patrones de testing.
+
+Notas personales:
+- Usé IA para acelerar ideas y refactorizaciones; traté de entender cada cambio y adaptar el código a buenas prácticas.
+- Mañana revisaré con calma las decisiones de diseño y completaré los tests e integración con la base de datos Oracle.

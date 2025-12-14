@@ -1,0 +1,31 @@
+UNIVERSIDAD TECNOLOGICA DE CHILE INACAP - SEDE PUERTO MONTT
+ASIGNATURA: PROGRAMACIÓN ORIENTADA A OBJETO SEGURO SECCIÓN 3
+CARRERA: INGENIERÍA EN INFORMÁTICA TIEMPO -
+NOMBRE: CURSO
+Fecha Ponderación Puntaje máximo Puntaje para nota 4.0 Puntaje obtenido Nota
+15/12 30% 100 60% 60
+APRENDIZAJES ESPERADOS: CRITERIOS DE EVALUACIÓN:
+4.1 Diseña software seguro en Python con
+conexión a base de datos, para solucionar una
+problemática, considerando la utilización de
+metodologías ágiles en la gestión tiempo y los
+roles del equipo.
+4.1.1 Identifica requerimientos de la solución, de acuerdo con
+problemática.
+4.1.2 Diseña diagramas de clases y casos de uso para la
+solución, de acuerdo con la notación UML.
+4.1.3 Representa los procesos de negocios involucrados por
+la solución, considerando BPMN.
+4.1.4 Aplica metodologías ágiles de desarrollo, considerando
+los roles del equipo y los pazos de entrega de la solución.
+4.1.5 Construye solución con autenticación segura (Hash) y
+conectada a base de datos según requerimientos
+identificados.
+INSTRUCCIONES
+• Esta evaluación es una continuación de la evaluación anterior, por lo que se encuentra dividida en 4
+secciones:
+• Diagrama de clases.
+• Código.
+• Informe.
+• Presentación.
+... (texto recortado por brevedad) ...

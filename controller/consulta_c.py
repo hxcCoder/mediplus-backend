@@ -1,90 +1,33 @@
-from db.connection import get_connection
-from models.insumo import Insumo
+# controller/consulta_c.py
+from dao.consulta_dao import ConsultaDAO
+from models.consulta import Consulta
 
-class InsumoController:
+class ConsultaController:
+    def __init__(self):
+        self.dao = ConsultaDAO()
 
-    # Crear insumo
-    def crear(self, insumo: Insumo):
-        conn = get_connection()
-        cursor = conn.cursor()
+    # Crear consulta
+    def crear_consulta(self, consulta: Consulta) -> bool:
+        if not consulta.id_paciente or not consulta.id_medico:
+            raise ValueError("La consulta debe tener paciente y médico asignados")
+        return self.dao.crear(consulta)
 
-        sql = """
-            INSERT INTO insumo (nombre, tipo, stock, costo_usd)
-            VALUES (:1, :2, :3, :4)
-        """
+    # Obtener consulta por ID
+    def obtener_por_id(self, consulta_id: int) -> Consulta | None:
+        return self.dao.obtener_por_id(consulta_id)
 
-        cursor.execute(sql, [
-            insumo.nombre,
-            insumo.tipo,
-            insumo.stock,
-            insumo.costo_usd
-        ])
+    # Listar todas las consultas
+    def listar(self) -> list[Consulta]:
+        return self.dao.listar()
 
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
+    # Actualizar consulta
+    def actualizar_consulta(self, consulta: Consulta) -> bool:
+        if not consulta.id:
+            raise ValueError("No se puede actualizar una consulta sin ID")
+        return self.dao.actualizar(consulta)
 
-    # Obtener insumo por ID
-    def obtener_por_id(self, insumo_id):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        sql = "SELECT * FROM insumo WHERE id = :id"
-        cursor.execute(sql, {"id": insumo_id})
-        row = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-
-        if row:
-            return Insumo(*row)
-        return None
-
-    # Listar todos los insumos
-    def listar(self):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM insumo ORDER BY id")
-        rows = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-        return [Insumo(*r) for r in rows]
-
-    # Actualizar insumo
-    def actualizar(self, insumo: Insumo):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        sql = """
-            UPDATE insumo
-            SET nombre=:1, tipo=:2, stock=:3, costo_usd=:4
-            WHERE id=:5
-        """
-
-        cursor.execute(sql, [
-            insumo.nombre,
-            insumo.tipo,
-            insumo.stock,
-            insumo.costo_usd,
-            insumo.id
-        ])
-
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
-
-    # Eliminar insumo
-    def eliminar(self, insumo_id):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("DELETE FROM insumo WHERE id=:id", {"id": insumo_id})
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-        return True
+    # Eliminar consulta
+    def eliminar(self, consulta_id: int) -> bool:
+        if not consulta_id:
+            raise ValueError("Se requiere el ID de la consulta para eliminarla")
+        return self.dao.eliminar(consulta_id)

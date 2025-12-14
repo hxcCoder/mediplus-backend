@@ -1,72 +1,37 @@
-# controller/auth_c.py
-from typing import Optional
-from db.connection import get_connection
-from utils.security import hash_password, check_password
 from models.usuario import Usuario
+from typing import TYPE_CHECKING, Optional
+if TYPE_CHECKING:
+    from dao.usuario_dao import UsuarioDAO
+from utils.security import hash_password
 
 
 class AuthController:
+    """Controller para registro/login. Acepta un DAO opcional para facilitar pruebas."""
+
+    def __init__(self, usuario_dao: Optional['UsuarioDAO'] = None):
+        # Importar DAO solo cuando sea necesario para evitar dependencias pesadas en tiempo de import
+        if usuario_dao is None:
+            from dao.usuario_dao import UsuarioDAO
+            usuario_dao = UsuarioDAO()
+        self.usuario_dao = usuario_dao
 
     def registrar_usuario(self, usuario: Usuario) -> bool:
-        if not usuario.clave:
-            raise ValueError("La contraseña no puede ser None")
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        try:
-            cursor.execute("""
-                INSERT INTO usuario
-                (nombre_usuario, clave, nombre, apellido, fecha_nacimiento,
-                 telefono, email, tipo)
-                VALUES (:1, :2, :3, :4, :5, :6, :7, :8)
-            """, (
-                usuario.nombre_usuario,
-                hash_password(usuario.clave),
-                usuario.nombre,
-                usuario.apellido,
-                usuario.fecha_nacimiento,
-                usuario.telefono,
-                usuario.email,
-                usuario.tipo
-            ))
-
-            conn.commit()
-            return True
-
-        except Exception as e:
-            conn.rollback()
-            print("Error registro:", e)
+        # Validación básica
+        if not usuario.nombre_usuario or not usuario.clave:
             return False
 
-        finally:
-            cursor.close()
-            conn.close()
+        # Evitar usuarios duplicados
+        existente = self.usuario_dao.obtener_por_nombre_usuario(usuario.nombre_usuario)
+        if existente:
+            return False
 
-    def login(self, nombre_usuario: str, clave: str) -> Optional[Usuario]:
-        conn = get_connection()
-        cursor = conn.cursor()
+        # Hash de contraseña y almacenar como str
+        usuario.clave = hash_password(usuario.clave).decode("utf-8")
 
-        cursor.execute("""
-            SELECT id, nombre_usuario, clave, nombre, apellido, tipo
-            FROM usuario
-            WHERE nombre_usuario = :1
-        """, (nombre_usuario,))
+        return self.usuario_dao.crear(usuario)
 
-        row = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if not row:
+    def login(self, nombre_usuario: str, clave: str) -> Usuario | None:
+        """Intenta autenticar y devuelve Usuario o None"""
+        if not nombre_usuario or not clave:
             return None
-
-        if not check_password(clave, row[2]):
-            return None
-
-        return Usuario(
-            id=row[0],
-            nombre_usuario=row[1],
-            nombre=row[3],
-            apellido=row[4],
-            tipo=row[5]
-        )
+        return self.usuario_dao.login(nombre_usuario, clave)

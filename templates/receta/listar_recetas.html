@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Listado de Recetas</title>
+</head>
+<body>
+    <h2>Recetas</h2>
+    <a href="{{ url_for('receta.crear_receta') }}">Crear Receta</a>
+    <table border="1">
+        <tr><th>ID</th><th>Paciente</th><th>Médico</th><th>Descripción</th><th>Medicamentos</th><th>Costo</th><th>Fecha</th><th>Acciones</th></tr>
+        {% for r in recetas %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.id_paciente }}</td>
+            <td>{{ r.id_medico }}</td>
+            <td>{{ r.descripcion }}</td>
+            <td>{{ r.medicamentos_recetados }}</td>
+            <td>{{ r.costo_clp | format_clp }}</td>
+            <td>{{ r.fecha }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('receta.eliminar_receta', id_receta=r.id) }}" style="display:inline">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

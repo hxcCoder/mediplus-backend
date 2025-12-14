@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Médico</title>
+</head>
+<body>
+    <h2>Editar Médico</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div style="color: red">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <input type="text" name="nombre_usuario" value="{{ medico.nombre_usuario }}" required><br>
+        <input type="text" name="nombre" value="{{ medico.nombre }}" required><br>
+        <input type="text" name="apellido" value="{{ medico.apellido }}" required><br>
+        <input type="date" name="fecha_nacimiento" value="{{ medico.fecha_nacimiento }}"><br>
+        <input type="text" name="telefono" value="{{ medico.telefono }}"><br>
+        <input type="email" name="email" value="{{ medico.email }}"><br>
+        <input type="text" name="especialidad" value="{{ medico.especialidad }}"><br>
+        <button type="submit">Actualizar</button>
+    </form>
+
+    <a href="{{ url_for('medico.listar_medicos') }}">Volver a la lista</a>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Médico</title>
+</head>
+<body>
+    <h2>Editar Médico</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div style="color: red">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <input type="text" name="nombre_usuario" value="{{ medico.nombre_usuario }}" required><br>
+        <input type="text" name="nombre" value="{{ medico.nombre }}" required><br>
+        <input type="text" name="apellido" value="{{ medico.apellido }}" required><br>
+        <input type="date" name="fecha_nacimiento" value="{{ medico.fecha_nacimiento }}"><br>
+        <input type="text" name="telefono" value="{{ medico.telefono }}"><br>
+        <input type="email" name="email" value="{{ medico.email }}"><br>
+        <input type="text" name="especialidad" value="{{ medico.especialidad }}"><br>
+        <button type="submit">Actualizar</button>
+    </form>
+
+    <a href="{{ url_for('medico.listar_medicos') }}">Volver a la lista</a>
+</body>
+</html>
