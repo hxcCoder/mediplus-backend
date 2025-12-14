@@ -25,14 +25,16 @@ class Usuario:
         self.tipo = tipo
 
     def to_dict(self) -> dict:
-        """Convierte el objeto a diccionario para JSON"""
         return {
             "id": self.id,
             "nombre_usuario": self.nombre_usuario,
-            "tipo": self.tipo,
             "nombre": self.nombre,
             "apellido": self.apellido,
-            "fecha_nacimiento": str(self.fecha_nacimiento) if self.fecha_nacimiento else None,
+            "fecha_nacimiento": (
+                self.fecha_nacimiento.isoformat()
+                if self.fecha_nacimiento else None
+            ),
             "telefono": self.telefono,
-            "email": self.email
+            "email": self.email,
+            "tipo": self.tipo
         }

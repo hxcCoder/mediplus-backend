@@ -1,21 +1,19 @@
-from typing import List, Dict, Optional
+from typing import List, Dict
 from models.insumo import Insumo
+from dao.insumo_dao import InsumoDAO
 
 
 class InsumoController:
-    def __init__(self, dao: Optional[object] = None):
-        # Permitir inyección de DAO para tests
-        if dao is None:
-            from dao.insumo_dao import InsumoDAO
-            dao = InsumoDAO()
-        self.dao = dao
+    def __init__(self, dao: InsumoDAO | None = None):
+        # Inyección de dependencias (buena práctica)
+        self.dao: InsumoDAO = dao if dao else InsumoDAO()
 
     def listar(self) -> List[Insumo]:
-        return self.dao.listar()  # devuelve lista de objetos Insumo
+        return self.dao.listar()
 
     def crear(self, datos: Dict) -> bool:
         try:
-            insumo = Insumo(**datos)  # mapear datos recibidos al modelo
+            insumo = Insumo(**datos)
             return self.dao.crear(insumo)
         except Exception as e:
             print("Error en InsumoController.crear:", e)
@@ -26,9 +24,11 @@ class InsumoController:
             insumo = self.dao.obtener_por_id(insumo_id)
             if not insumo:
                 return False
+
             for key, value in datos.items():
                 if hasattr(insumo, key):
                     setattr(insumo, key, value)
+
             return self.dao.actualizar(insumo)
         except Exception as e:
             print("Error en InsumoController.actualizar:", e)
