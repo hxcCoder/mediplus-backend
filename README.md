@@ -68,7 +68,6 @@ El sistema sigue arquitectura MVC:
 - Views: Plantillas HTML/CSS/JS para interacción con el usuario.
 
 - Seguridad: Hash de contraseñas, sesiones y roles para acceso controlado.
-- 
 ## Instalación
 1. Clonar el repositorio:
 
