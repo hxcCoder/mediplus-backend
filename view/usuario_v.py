@@ -64,7 +64,7 @@ def crear_usuario_template():
 
 @usuario_bp.route("/editar/<int:usuario_id>", methods=["GET", "POST"])
 def editar_usuario_template(usuario_id):
-    usuario = usuario_controller.obtener_usuario(usuario_id)
+    usuario = usuario_controller.obtener_usuario_por_id(usuario_id)
     if not usuario:
         return render_template("errors/404.html"), 404
     if request.method == "POST":

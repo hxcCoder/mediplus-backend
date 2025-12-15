@@ -1,55 +1,74 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
-from middleware.auth import login_required, admin_required
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from controller.insumo_c import InsumoController
 
-insumo_bp = Blueprint("insumo", __name__, url_prefix="/insumos")
+insumo_bp = Blueprint("insumo_bp", __name__, template_folder="../templates")
+
 controller = InsumoController()
 
-
-@insumo_bp.route("/", methods=["GET"])
-@login_required
+@insumo_bp.route("/insumos")
 def listar_insumos():
-    insumos = controller.listar()
-    # Preferir render template, fallback to JSON
-    try:
-        return render_template("insumo/listar_insumos.html", insumos=insumos)
-    except Exception:
-        return jsonify([i.to_dict() for i in insumos]), 200
+    insumos = controller.listar_insumos()
+    return render_template("insumos/listar.html", insumos=insumos)
 
-
-@insumo_bp.route("/", methods=["POST"])
-@admin_required
+@insumo_bp.route("/insumos/crear", methods=["GET", "POST"])
 def crear_insumo():
-    data = request.get_json() or {}
-    # Permitir formulario o JSON
-    if not data:
-        data = {
-            "nombre": request.form.get("nombre"),
-            "tipo": request.form.get("tipo"),
-            "stock": int(request.form.get("stock", 0)),
-            "costo_usd": float(request.form.get("costo_usd", 0.0))
-        }
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "")
+        tipo = request.form.get("tipo", "")
+        stock = request.form.get("stock", "0")
+        costo_usd = request.form.get("costo_usd", "0")
 
-    ok = controller.crear(data)
-    if ok:
-        return ("", 201) if request.is_json else redirect(url_for("insumo.listar_insumos"))
-    return (jsonify({"error": "No se pudo crear insumo"}), 400) if request.is_json else ("Error", 400)
+        try:
+            stock = int(stock)
+        except ValueError:
+            stock = 0
+        try:
+            costo_usd = float(costo_usd)
+        except ValueError:
+            costo_usd = 0.0
 
+        if controller.crear_insumo(nombre, tipo, stock, costo_usd):
+            flash("Insumo creado correctamente", "success")
+            return redirect(url_for("insumo_bp.listar_insumos"))
+        else:
+            flash("Error al crear insumo", "danger")
 
-@insumo_bp.route("/<int:insumo_id>", methods=["PUT"])
-@admin_required
-def actualizar_insumo(insumo_id):
-    data = request.get_json() or {}
-    ok = controller.actualizar(insumo_id, data)
-    if ok:
-        return jsonify({"mensaje": "Insumo actualizado"}), 200
-    return jsonify({"error": "No se pudo actualizar"}), 400
+    return render_template("insumos/crear.html")
 
+@insumo_bp.route("/insumos/editar/<int:insumo_id>", methods=["GET", "POST"])
+def editar_insumo(insumo_id):
+    insumo = controller.obtener_insumo_por_id(insumo_id)
+    if not insumo:
+        flash("Insumo no encontrado", "warning")
+        return redirect(url_for("insumo_bp.listar_insumos"))
 
-@insumo_bp.route("/<int:insumo_id>", methods=["DELETE"])
-@admin_required
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "")
+        tipo = request.form.get("tipo", "")
+        stock = request.form.get("stock", "0")
+        costo_usd = request.form.get("costo_usd", "0")
+
+        try:
+            stock = int(stock)
+        except ValueError:
+            stock = 0
+        try:
+            costo_usd = float(costo_usd)
+        except ValueError:
+            costo_usd = 0.0
+
+        if controller.actualizar_insumo(insumo_id, nombre, tipo, stock, costo_usd):
+            flash("Insumo actualizado correctamente", "success")
+            return redirect(url_for("insumo_bp.listar_insumos"))
+        else:
+            flash("Error al actualizar insumo", "danger")
+
+    return render_template("insumos/editar.html", insumo=insumo)
+
+@insumo_bp.route("/insumos/eliminar/<int:insumo_id>", methods=["POST"])
 def eliminar_insumo(insumo_id):
-    ok = controller.eliminar(insumo_id)
-    if ok:
-        return jsonify({"mensaje": "Insumo eliminado"}), 200
-    return jsonify({"error": "No se pudo eliminar"}), 400
+    if controller.eliminar_insumo(insumo_id):
+        flash("Insumo eliminado correctamente", "success")
+    else:
+        flash("Error al eliminar insumo", "danger")
+    return redirect(url_for("insumo_bp.listar_insumos"))

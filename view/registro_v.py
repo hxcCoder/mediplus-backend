@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from controller.usuario_c import UsuarioController
+from controller.auth_c import AuthController
 from models.usuario import Usuario
 from datetime import datetime
 
 registro_bp = Blueprint("registro", __name__)
-usuario_controller = UsuarioController()
+auth_controller = AuthController()
 
 @registro_bp.route("/register", methods=["GET"])
 def register_form():
@@ -19,10 +19,10 @@ def register_action():
     fecha_nacimiento = request.form.get("fecha_nacimiento")
     telefono = request.form.get("telefono") or ""
     email = request.form.get("email") or ""
-    tipo = request.form.get("tipo")
+    tipo = request.form.get("tipo") or "PACIENTE"
 
     if not nombre_usuario or not clave or not tipo:
-        flash("Debes completar los campos obligatorios")
+        flash("Debes completar los campos obligatorios", "error")
         return redirect(url_for("registro.register_form"))
 
     nuevo_usuario = Usuario(
@@ -36,6 +36,10 @@ def register_action():
         tipo=tipo
     )
 
-    exito = usuario_controller.crear(nuevo_usuario)
-    flash("Usuario registrado correctamente" if exito else "Error al registrar usuario")
-    return redirect(url_for("login.login_form") if exito else url_for("registro.register_form"))
+    exito = auth_controller.registrar_usuario(nuevo_usuario)
+    if exito:
+        flash("Usuario registrado correctamente", "success")
+        return redirect(url_for("login.login_form"))
+    else:
+        flash("Error al registrar usuario (nombre de usuario ya existe)", "error")
+        return redirect(url_for("registro.register_form"))

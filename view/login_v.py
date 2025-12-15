@@ -14,34 +14,29 @@ def login_action():
     clave = request.form.get("clave")
 
     if not nombre_usuario or not clave:
-        flash("Debes completar todos los campos")
+        flash("Debes completar todos los campos", "error")
         return redirect(url_for("login.login_form"))
 
     usuario = auth_controller.login(nombre_usuario, clave)
-    if not usuario:
-        flash("Usuario o contraseña incorrectos")
-        return redirect(url_for("login.login_form"))
+    if usuario:
+        session["usuario_id"] = usuario.id
+        session["usuario_nombre"] = usuario.nombre_usuario
+        session["usuario_tipo"] = usuario.tipo
+        flash(f"Bienvenido, {usuario.nombre_completo()}", "success")
 
-    # Guardar datos en session
-    session["user_id"] = usuario.id
-    session["username"] = usuario.nombre_usuario
-    session["tipo"] = usuario.tipo
-    session["user"] = {"id": usuario.id, "username": usuario.nombre_usuario, "tipo": usuario.tipo}
+        # Redirige según tipo de usuario
+        if usuario.tipo == "ADMIN":
+            return redirect(url_for("menu_admin.menu"))
+        elif usuario.tipo == "MEDICO":
+            return redirect(url_for("menu_medico.menu"))
+        else:
+            return redirect(url_for("menu_paciente.menu"))
 
-    # Redirigir según tipo
-    tipo_lower = usuario.tipo.lower()
-    if tipo_lower == "admin":
-        return redirect(url_for("administrador.menu_admin"))
-    elif tipo_lower == "medico":
-        return redirect(url_for("menu_medico.menu"))
-    elif tipo_lower == "paciente":
-        return redirect(url_for("menu_paciente.menu"))
-    else:
-        flash("Tipo de usuario desconocido")
-        return redirect(url_for("login.login_form"))
+    flash("Usuario o contraseña incorrectos", "error")
+    return redirect(url_for("login.login_form"))
 
 @login_bp.route("/logout")
 def logout():
     session.clear()
-    flash("Sesión cerrada correctamente")
+    flash("Has cerrado sesión correctamente", "success")
     return redirect(url_for("login.login_form"))

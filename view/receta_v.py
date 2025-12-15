@@ -1,62 +1,88 @@
-# view/receta_v.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from middleware.auth import login_required
 from controller.receta_c import RecetaController
+from models.receta import Receta
 
-receta_bp = Blueprint("receta", __name__)
+receta_bp = Blueprint("receta_bp", __name__, template_folder="../templates")
+
 controller = RecetaController()
 
-# --- Listar recetas ---
-@receta_bp.route("/recetas", methods=["GET"])
-@login_required
+@receta_bp.route("/recetas")
 def listar_recetas():
-    recetas = controller.listar()
-    return render_template("receta/listar_recetas.html", recetas=recetas)
+    recetas = controller.listar_recetas()
+    return render_template("recetas/listar.html", recetas=recetas)
 
-# --- Crear receta ---
-@receta_bp.route("/receta/nueva", methods=["GET", "POST"])
-@login_required
+@receta_bp.route("/recetas/crear", methods=["GET", "POST"])
 def crear_receta():
     if request.method == "POST":
-        receta_data = {
-            "id_paciente": request.form.get("id_paciente"),
-            "id_medico": request.form.get("id_medico"),
-            "descripcion": request.form.get("descripcion"),
-            "medicamentos_recetados": request.form.get("medicamentos_recetados"),
-            "costo_clp": request.form.get("costo_clp"),
-            "fecha": request.form.get("fecha")
-        }
-        success = controller.crear_receta(receta_data)
-        flash("Receta creada correctamente" if success else "Error al crear receta")
-        return redirect(url_for("receta.listar_recetas"))
+        try:
+            id_paciente = int(request.form.get("id_paciente", "0"))
+        except ValueError:
+            id_paciente = 0
+        try:
+            id_medico = int(request.form.get("id_medico", "0"))
+        except ValueError:
+            id_medico = 0
 
-    return render_template("receta/crear_receta.html")
+        descripcion = request.form.get("descripcion", "")
+        medicamentos = request.form.get("medicamentos", "")
+        try:
+            costo_clp = float(request.form.get("costo_clp", "0"))
+        except ValueError:
+            costo_clp = 0.0
+        fecha = request.form.get("fecha", "")
 
+        nueva = Receta(
+            id=None,
+            id_paciente=id_paciente,
+            id_medico=id_medico,
+            descripcion=descripcion,
+            medicamentos_recetados=medicamentos,
+            costo_clp=costo_clp,
+            fecha=fecha
+        )
 
-@receta_bp.route("/receta/editar/<int:id_receta>", methods=["GET", "POST"])
-@login_required
-def editar_receta_action(id_receta):
-    receta = controller.obtener_por_id(id_receta)
+        if controller.crear_receta(nueva):
+            flash("Receta creada correctamente", "success")
+            return redirect(url_for("receta_bp.listar_recetas"))
+        else:
+            flash("Error al crear receta", "danger")
+
+    return render_template("recetas/crear.html")
+
+@receta_bp.route("/recetas/editar/<int:receta_id>", methods=["GET", "POST"])
+def editar_receta(receta_id):
+    receta = controller.obtener_receta_por_id(receta_id)
     if not receta:
-        flash("Receta no encontrada")
-        return redirect(url_for("receta.listar_recetas"))
+        flash("Receta no encontrada", "warning")
+        return redirect(url_for("receta_bp.listar_recetas"))
 
     if request.method == "POST":
         receta.descripcion = request.form.get("descripcion", receta.descripcion)
-        receta.medicamentos_recetados = request.form.get("medicamentos_recetados", receta.medicamentos_recetados)
-        receta.costo_clp = request.form.get("costo_clp", receta.costo_clp)
-        receta.fecha = request.form.get("fecha", receta.fecha)
+        receta.medicamentos_recetados = request.form.get("medicamentos", receta.medicamentos_recetados)
+        
+        costo_input = request.form.get("costo_clp")
+        if costo_input:
+            try:
+                receta.costo_clp = float(costo_input)
+            except ValueError:
+                flash("Costo inválido", "danger")
+        
+        fecha_input = request.form.get("fecha")
+        if fecha_input:
+            receta.fecha = fecha_input
 
-        ok = controller.actualizar_receta(receta)
-        flash("Receta actualizada" if ok else "Error al actualizar receta")
-        return redirect(url_for("receta.listar_recetas"))
+        if controller.actualizar_receta(receta):
+            flash("Receta actualizada correctamente", "success")
+            return redirect(url_for("receta_bp.listar_recetas"))
+        else:
+            flash("Error al actualizar receta", "danger")
 
-    return render_template("receta/editar_receta.html", receta=receta)
+    return render_template("recetas/editar.html", receta=receta)
 
-# --- Eliminar receta ---
-@receta_bp.route("/receta/eliminar/<int:id_receta>", methods=["POST"])
-@login_required
-def eliminar_receta(id_receta):
-    success = controller.eliminar(id_receta)
-    flash("Receta eliminada correctamente" if success else "Error al eliminar receta")
-    return redirect(url_for("receta.listar_recetas"))
+@receta_bp.route("/recetas/eliminar/<int:receta_id>", methods=["POST"])
+def eliminar_receta(receta_id):
+    if controller.eliminar_receta(receta_id):
+        flash("Receta eliminada correctamente", "success")
+    else:
+        flash("Error al eliminar receta", "danger")
+    return redirect(url_for("receta_bp.listar_recetas"))

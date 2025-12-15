@@ -1,10 +1,11 @@
 import bcrypt
 
-def hash_password(password: str) -> bytes:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+def hash_password(password: str) -> str:
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    return hashed.decode("utf-8")
 
-def check_password(password: str, hashed: bytes | str) -> bool:
-    # Acepta hashed como bytes o str (almacenado en DB como str UTF-8)
-    if isinstance(hashed, str):
-        hashed = hashed.encode("utf-8")
-    return bcrypt.checkpw(password.encode("utf-8"), hashed)
+def check_password(password: str, hashed: str) -> bool:
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+    except ValueError:
+        return False
