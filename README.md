@@ -1,95 +1,173 @@
-# Proyecto Prototipo MediPlus
+# MediPlus - Sistema de Gestión Medica Seguro
 
-## Asignatura
-Programación Orientada a Objetos Seguro - Sección 3
+**Asignatura:** Programación Orientada a Objetos Seguro  
+**Sección:** 3  
+**Carrera:** Ingeniería en Informática  
+**Estudiante:** Benjamin millalonco 
+**Fecha de entrega:** 15/12/2025  
+**Versión:** 1.0
 
-## Carrera
-Ingeniería en Informática
+## Descripcion
+MediPlus es un prototipo de sistema de informacion para clinicas de tamaño medio. Su objetivo es reemplazar registros en Excel y formularios en papel, permitiendo gestionar de manera segura usuarios, consultas, recetas, insumos y agenda médica. El sistema utiliza **Python**, **Flask**, **Oracle XE 21c**, y sigue buenas practicas de seguridad y el patrom MVC.
 
-## Estudiante
-Benjamin millalonco
+El proyecto fue desarrollado como parte de la asignatura **Programacion Orientada a Objetos Seguro**, aplicando metodologias ágiles y control de roles de usuarios (administrador, médico y paciente).
 
----
-
-## 1. Introduccion
-La clinica MediPlus realiza actualmente el registro de pacientes, medicos y consultas en planillas Excel y formularios en papel. Esto genera perdida de información, dificultad para realizar seguimiento de consultas previas y problemas de seguridad debido a la falta de control de acceso.  
-
-El proyecto desarrolla un prototipo de sistema de informacion que permite gestionar usuarios, consultas, recetas, insumos y agenda de manera segura, utilizando bases de datos y autenticación mediante hash de contraseñas.
-
----
-
-## 2. Objetivo General
-Desarrollar un sistema seguro en Python que permita la gestion completa de pacientes, medicos, administradores, consultas, recetas e insumos, asegurando la integridad de los datos y la proteccion de credenciales.
-
----
-
-## 3. Objetivos Específicos
-- Implementar registro de usuarios seguro a partir de archivos JSON.  
-- Gestionar inicio de sesión con control de roles (administrador, médico, paciente).  
-- Crear menus personalizados según el tipo de usuario.  
-- Permitir la edición de información de usuarios y la gestion de recursos medicos.  
-- Registrar consultas y recetas asociadas garantizando la integridad referencial.  
-- Implementar CRUD para pacientes, medicos, administradores, insumos, recetas y agenda.  
-- Prevenir inyeccion SQL mediante consultas parametrizadas.  
-- Almacenar toda la información en Oracle XE 21c.  
+## Objetivos Específicos
+- Registrar usuarios de manera segura a partir de archivos JSON.
+- Implementar autenticación con hash de contraseñas.
+- Crear un CRUD completo para cada entidad del sistema.
+- Presentar menús dinámicos según el tipo de usuario.
+- Mostrar valores en pesos chilenos (CLP) de forma consistente.
+- Prevenir inyección SQL mediante consultas parametrizadas.
+- Almacenar y gestionar la información en Oracle XE 21c.
 
 ---
 
-## 4. Requerimientos Detectados
-- Gestion de usuarios (crear, leer, actualizar, eliminar).  
-- Autenticación segura con hash de contraseñas.  
-- Gestion de consultas medicas y recetas.  
-- Gestion de insumos medicos.  
-- Control de agenda de citas.  
-- Presentacion de datos en pesos chilenos (CLP).  
-- Restricciones de acceso según tipo de usuario.  
-- Registro del trabajo y código en GitHub.  
+## Introducciin
+Actualmente, la clinica MediPlus registra información en planillas y papel, lo que genera pérdida de datos y dificultades en el seguimiento de pacientes. MediPlus busca digitalizar el proceso con un sistema seguro, eficiente y fácil de usar, asegurando integridad de datos y control de acceso.
+
+---
+## Requerimientos Detectados
+
+### Funcionales
+- Registro de usuarios desde JSON.
+- Inicio de sesión seguro.
+- CRUD de Usuarios, Pacientes, Médicos, Administradores, Consultas, Recetas, Insumos y Agenda.
+- Menús dinámicos por rol.
+- Consultas y reportes médicos.
+
+### No Funcionales
+- Seguridad de credenciales (hash de contraseñas).
+- Prevención de inyección SQL.
+- Control de sesión y roles.
+- Integridad y consistencia de datos en Oracle XE 21c.
+- Facilidad de uso y navegación.
 
 ---
 
-## 5. Diagrama de Clases
-Se utilizó PlantUML para representar la estructura del sistema, mostrando herencias, relaciones y métodos principales:
-
-- **Usuario**: Clase base con información común a todos los usuarios.  
-- **Paciente, Medico, Administrador**: Heredan de Usuario y añaden atributos especificos.  
-- **Receta, Consulta, Insumo, Agenda**: Clases auxiliares que permiten registrar información medica y logistica.  
-- **Menus**: Plantillas HTML que muestran opciones según el tipo de usuario.
-
-![Diagrama de Clases MediPlus]![alt text](image.png)
+## Tecnologias
+- Python 3.11+  
+- Flask  
+- Oracle XE 21c  
+- HTML / CSS / JS (Bootstrap opcional)  
+- PlantUML (diagrama de clases)  
+- Git y GitHub para control de versiones  
 
 ---
+Descripción de la Solución
+-
 
-## 6. Descripción de la Solucion
-El proyecto esta implementado siguiendo el patron MVC:  
-- **Modelos**: Definen clases y métodos de negocio para cada entidad.  
-- **Controladores**: Gestionan la logica de la aplicacion y el acceso a la base de datos.  
-- **Vistas**: Plantillas HTML/CSS que presentan la información y menus según el rol del usuario.  
+El sistema sigue arquitectura MVC:
 
-Se asegura la **seguridad** mediante hash de contraseñas, sesiones controladas y consultas parametrizadas para prevenir inyeccion SQL.  
-Se utiliza **Oracle XE 21c** como base de datos relacional y Flask con Blueprints para modularidad.
+- Models: Representan las entidades (Usuario, Paciente, Medico, Administrador, Receta, Consulta, Insumo, Agenda).
 
-### Flujo de la aplicacion
-1. Registro de usuarios (administrador puede crear cualquier tipo de usuario).  
-2. Inicio de sesion según rol.  
-3. Menús dinamicos:  
-   - Administrador: gestion de usuarios, consultas, recetas e insumos.  
-   - Médico: acceso a agenda, consultas y recetas de sus pacientes.  
-   - Paciente: acceso a sus consultas y recetas.  
-4. CRUD completo para cada entidad.  
+- DAO: Acceso seguro a la base de datos Oracle XE 21c.
 
-Repositorio en GitHub: [https://github.com/tu_usuario/mediplus-backend](https://github.com/HxcCoder/mediplus-backend)
+- Controllers: Lógica de negocio y validaciones.
 
----
+- Views: Plantillas HTML/CSS/JS para interacción con el usuario.
 
-## 7. Conclusion
-El prototipo MediPlus permite gestionar informacion médica de manera segura y eficiente. Se aplicaron buenas practicas de desarrollo seguro, control de accesos por roles, integridad de datos y almacenamiento confiable. El sistema facilita el seguimiento de consultas, la gestión de recursos y la administracion de usuarios.
+- Seguridad: Hash de contraseñas, sesiones y roles para acceso controlado.
+- 
+## Instalación
+1. Clonar el repositorio:
 
----
+- git clone https://github.com/tu_usuario/medi_plus_proyecto.git
+- cd medi_plus_proyecto
 
-## 8. Fuentes
-- Documentacion de Flask: [https://flask.palletsprojects.com/](https://flask.palletsprojects.com/)  
-- Oracle XE 21c: [https://www.oracle.com/database/technologies/xe.html](https://www.oracle.com/database/technologies/xe.html)  
-- PlantUML: [https://plantuml.com/es/class-diagram](https://plantuml.com/es/class-diagram)  
-- Normas APA para referencias bibliográficas.  
----
+2. Crear y activar entorno virtual:
+- python -m venv venv
+source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate      # Windows
 
+3. Instalar dependencias:
+- pip install -r requirements.txt
+4. Configurar variables e entornno(.env):
+  
+FLASK_SECRET_KEY=tu_clave_segura
+FLASK_DEBUG=True
+SESSION_COOKIE_SAMESITE=Lax
+SESSION_COOKIE_SECURE=False
+PORT=5000
+
+5. Configurar base de datos Oracle XE 21c y actualizar db/connection.py
+
+## Uso
+
+1. Ejecutar la aplicación:
+- python app.py
+
+2.Acceder desde el navegador:
+http://localhost:5000/login
+
+3. Iniciar sesion segun rol:
+- Administrador: Gestiona usuarios, consultas, recetas e insumos.
+
+- Médico: Acceso a agenda y consultas de sus pacientes.
+
+- Paciente: Consulta su información y recetas.
+
+Diagrama de Clases
+- 
+
+Se utilizo PlantUML para representar las entidades y relaciones:
+
+- Usuario (base)
+
+- Paciente, Medico, Administrador (heredan de Usuario)
+
+- Receta, Consulta, Insumo, Agenda (relaciones con usuarios y entre si)
+
+Flujo de la Aplicación
+-
+
+1. Registro de usuarios desde JSON.
+
+2. Login seguro con hash de contraseña.
+
+3. Menus dinámicos por tipo de usuario.
+
+4. CRUD de entidades segun permisos.
+
+5. Consulta de informacion médica y generación de reportes.
+
+Seguridad
+-
+
+- Hash de contraseñas con algoritmos seguros.
+
+- Prevención de inyección SQL mediante consultas parametrizadas.
+
+- Control de sesiones y roles.
+
+- Datos criticos protegidos y cifrados en la base de datos.
+
+Ejemplos de Uso
+-
+
+- Administrador: Gestiona usuarios y registros de consultas.
+
+- Médico: Visualiza agenda y pacientes asignados.
+
+- Paciente: Consulta recetas y citas programadas.
+
+Repositorio
+-
+
+https://github.com/HxcCoder/mediplus-backend
+
+Conclusion
+-
+
+El prototipo MediPlus digitaliza la gestión medica, asegura la integridad de la informacion y mejora la eficiencia de la clinica. Se aplicaron buenas practicas de desarrollo seguro y control de acceso, cumpliendo con los requerimientos de la asignatura.
+
+Referencias
+-
+
+- Documentacion oficial de Flask: https://flask.palletsprojects.com
+
+- Oracle XE 21c: https://www.oracle.com/database/technologies/xe.html
+
+- PlantUML: https://plantuml.com/es/class-diagram
+
+- Normas APA para referencias bibliográficas.
