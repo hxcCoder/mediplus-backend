@@ -1,90 +1,92 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from middleware.auth import admin_required
-from dao.medico_dao import MedicoDAO
+from flask import Blueprint, request, jsonify, render_template
+from datetime import datetime, date
+from controller.medico_c import MedicoController
 from models.medico import Medico
-from datetime import datetime
 
-medico_bp = Blueprint("medico", __name__, url_prefix="/medico")
-medico_dao = MedicoDAO()
-
-
-# ------------------------------
-# Listar médicos
-# ------------------------------
-@medico_bp.route("/listar")
-@admin_required
-def listar_medicos():
-    medicos = medico_dao.listar()
-    return render_template("medico/listar_medicos.html", medicos=medicos)
+medico_bp = Blueprint("medico", __name__, url_prefix="/medicos")
+medico_controller = MedicoController()
 
 
-# ------------------------------
-# Crear médico
-# ------------------------------
-@medico_bp.route("/crear", methods=["GET", "POST"])
-@admin_required
+def parse_fecha(fecha_str: str | None) -> date | None:
+    """Convierte string 'YYYY-MM-DD' a objeto date"""
+    if not fecha_str:
+        return None
+    try:
+        return datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+@medico_bp.route("/crear", methods=["POST"])
 def crear_medico():
-    if request.method == "POST":
+    """Ruta para crear un médico"""
+    data = request.get_json() or {}
 
-        medico = Medico(
-            nombre_usuario=request.form["nombre_usuario"],
-            clave=request.form["clave"],
-            nombre=request.form["nombre"],
-            apellido=request.form["apellido"],
-            fecha_nacimiento=datetime.strptime(request.form["fecha_nacimiento"], "%Y-%m-%d").date() if request.form.get("fecha_nacimiento") else None,
-            telefono=request.form["telefono"],
-            email=request.form["email"],
-            especialidad=request.form["especialidad"]
-        )
+    medico = Medico(
+        nombre_usuario=data.get("nombre_usuario", ""),
+        clave=data.get("clave", ""),
+        nombre=data.get("nombre", ""),
+        apellido=data.get("apellido", ""),
+        fecha_nacimiento=parse_fecha(data.get("fecha_nacimiento")),
+        telefono=data.get("telefono", ""),
+        email=data.get("email", ""),
+        tipo="MEDICO",
+        especialidad=data.get("especialidad", ""),
+        horario_atencion=data.get("horario_atencion", ""),
+        fecha_ingreso=parse_fecha(data.get("fecha_ingreso"))
+    )
 
-        medico_dao.crear(medico)
-        flash("Médico creado correctamente")
-        return redirect(url_for("medico.listar_medicos"))
+    if not medico_controller.crear_medico(medico):
+        return jsonify({"error": "No se pudo crear médico"}), 500
 
+    return jsonify({"mensaje": "Médico creado correctamente"}), 201
+
+
+@medico_bp.route("/listar", methods=["GET"])
+def listar_medicos():
+    """Ruta para listar todos los médicos"""
+    medicos = medico_controller.listar_medicos()
+    return jsonify([m.to_dict() for m in medicos])
+
+
+@medico_bp.route("/editar/<int:medico_id>", methods=["PUT"])
+def editar_medico(medico_id):
+    """Ruta para actualizar un médico"""
+    data = request.get_json() or {}
+    medico = medico_controller.obtener_medico_por_id(medico_id)
+    if not medico:
+        return jsonify({"error": "Médico no encontrado"}), 404
+
+    medico.nombre_usuario = data.get("nombre_usuario", medico.nombre_usuario)
+    medico.nombre = data.get("nombre", medico.nombre)
+    medico.apellido = data.get("apellido", medico.apellido)
+    medico.telefono = data.get("telefono", medico.telefono)
+    medico.email = data.get("email", medico.email)
+    medico.especialidad = data.get("especialidad", medico.especialidad)
+    medico.horario_atencion = data.get("horario_atencion", medico.horario_atencion)
+    medico.fecha_ingreso = parse_fecha(data.get("fecha_ingreso")) or medico.fecha_ingreso
+
+    if not medico_controller.actualizar_medico(medico):
+        return jsonify({"error": "No se pudo actualizar médico"}), 500
+
+    return jsonify({"mensaje": "Médico actualizado correctamente"}), 200
+
+
+@medico_bp.route("/eliminar/<int:medico_id>", methods=["DELETE"])
+def eliminar_medico(medico_id):
+    """Ruta para eliminar un médico"""
+    if not medico_controller.eliminar_medico(medico_id):
+        return jsonify({"error": "No se pudo eliminar médico"}), 500
+    return jsonify({"mensaje": "Médico eliminado correctamente"}), 200
+
+
+# Opcional: rutas de renderización de templates
+@medico_bp.route("/form/crear", methods=["GET"])
+def form_crear_medico():
     return render_template("medico/crear_medico.html")
 
 
-# ------------------------------
-# Editar médico
-# ------------------------------
-@medico_bp.route("/editar/<int:medico_id>", methods=["GET", "POST"])
-@admin_required
-def editar_medico(medico_id):
-    medico = medico_dao.obtener_por_id(medico_id)
-    if not medico:
-        flash("Médico no encontrado")
-        return redirect(url_for("medico.listar_medicos"))
-
-    if request.method == "POST":
-        medico.nombre_usuario = request.form["nombre_usuario"]
-        medico.nombre = request.form["nombre"]
-        medico.apellido = request.form["apellido"]
-        medico.fecha_nacimiento = datetime.strptime(request.form["fecha_nacimiento"], "%Y-%m-%d").date() if request.form.get("fecha_nacimiento") else medico.fecha_nacimiento
-        medico.telefono = request.form["telefono"]
-        medico.email = request.form["email"]
-        medico.especialidad = request.form["especialidad"]
-
-        medico_dao.actualizar(medico)
-        flash("Médico actualizado correctamente")
-        return redirect(url_for("medico.listar_medicos"))
-
-    return render_template("medico/editar_medico.html", medico=medico)
-
-
-# ------------------------------
-# Eliminar médico
-# ------------------------------
-@medico_bp.route("/eliminar/<int:medico_id>", methods=["GET","POST"])
-@admin_required
-def eliminar_medico(medico_id):
-    medico = medico_dao.obtener_por_id(medico_id)
-    if not medico:
-        flash("Médico no encontrado")
-        return redirect(url_for("medico.listar_medicos"))
-
-    if request.method == "POST":
-        medico_dao.eliminar(medico_id)
-        flash("Médico eliminado correctamente")
-        return redirect(url_for("medico.listar_medicos"))
-
-    return render_template("medico/eliminar_medico.html", medico=medico)
+@medico_bp.route("/form/listar", methods=["GET"])
+def form_listar_medicos():
+    medicos = medico_controller.listar_medicos()
+    return render_template("medico/listar_medicos.html", medicos=medicos)

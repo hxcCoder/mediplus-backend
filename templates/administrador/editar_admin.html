@@ -2,14 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Administrador</title>
+    <title>Editar Administrador - MediPlus</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-        .container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
-        button { width: 100%; padding: 10px; margin-top: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #218838; }
-        .flash { color: red; text-align: center; margin-bottom: 12px; }
+        .container { max-width: 500px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 10px; }
+        input { width: 100%; padding: 8px; margin-top: 4px; border-radius: 4px; border: 1px solid #ccc; }
+        button { margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        .flash { color: red; margin-bottom: 12px; text-align: center; }
     </style>
 </head>
 <body>
@@ -24,19 +25,27 @@
             {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('administrador.editar_administrador', admin_id=administrador.id) }}" method="POST">
+        <form method="POST">
+            <label>Nombre de Usuario</label>
             <input type="text" name="nombre_usuario" value="{{ administrador.nombre_usuario }}" required>
-            <input type="text" name="nombre" value="{{ administrador.nombre }}" required>
-            <input type="text" name="apellido" value="{{ administrador.apellido }}" required>
+
+            <label>Nombre</label>
+            <input type="text" name="nombre" value="{{ administrador.nombre }}">
+
+            <label>Apellido</label>
+            <input type="text" name="apellido" value="{{ administrador.apellido }}">
+
+            <label>Fecha de Nacimiento</label>
             <input type="date" name="fecha_nacimiento" value="{{ administrador.fecha_nacimiento }}">
+
+            <label>Teléfono</label>
             <input type="text" name="telefono" value="{{ administrador.telefono }}">
+
+            <label>Email</label>
             <input type="email" name="email" value="{{ administrador.email }}">
+
             <button type="submit">Actualizar Administrador</button>
         </form>
-
-        <p style="text-align:center; margin-top: 12px;">
-            <a href="{{ url_for('administrador.listar_administradores') }}">Volver al listado</a>
-        </p>
     </div>
 </body>
 </html>

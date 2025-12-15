@@ -8,9 +8,8 @@ admin_bp = Blueprint("administrador", __name__, url_prefix="/administrador")
 admin_dao = AdministradorDAO()
 
 
-# ------------------------------
 # Listar administradores
-# ------------------------------
+
 @admin_bp.route("/listar")
 @admin_required
 def listar_administradores():
@@ -18,9 +17,7 @@ def listar_administradores():
     return render_template("administrador/listar_admin.html", administradores=admins)
 
 
-# ------------------------------
 # Crear administrador
-# ------------------------------
 @admin_bp.route("/crear", methods=["GET", "POST"])
 @admin_required
 def crear_administrador():
@@ -30,21 +27,20 @@ def crear_administrador():
             clave=request.form["clave"],
             nombre=request.form["nombre"],
             apellido=request.form["apellido"],
-            fecha_nacimiento=datetime.strptime(request.form["fecha_nacimiento"], "%Y-%m-%d").date() if request.form.get("fecha_nacimiento") else None,
+            fecha_nacimiento=datetime.strptime(request.form["fecha_nacimiento"], "%Y-%m-%d").date() 
+                            if request.form.get("fecha_nacimiento") else None,
             telefono=request.form["telefono"],
             email=request.form["email"]
         )
 
-        admin_dao.crear(admin)
-        flash("Administrador creado correctamente")
+        exito = admin_dao.crear(admin)
+        flash("Administrador creado correctamente" if exito else "Error al crear administrador")
         return redirect(url_for("administrador.listar_administradores"))
 
     return render_template("administrador/crear_admin.html")
 
 
-# ------------------------------
 # Editar administrador
-# ------------------------------
 @admin_bp.route("/editar/<int:admin_id>", methods=["GET", "POST"])
 @admin_required
 def editar_administrador(admin_id):
@@ -57,23 +53,22 @@ def editar_administrador(admin_id):
         admin.nombre_usuario = request.form["nombre_usuario"]
         admin.nombre = request.form["nombre"]
         admin.apellido = request.form["apellido"]
-        admin.fecha_nacimiento = datetime.strptime(request.form["fecha_nacimiento"], "%Y-%m-%d").date() if request.form.get("fecha_nacimiento") else admin.fecha_nacimiento
+        admin.fecha_nacimiento = datetime.strptime(request.form["fecha_nacimiento"], "%Y-%m-%d").date() \
+                                if request.form.get("fecha_nacimiento") else admin.fecha_nacimiento
         admin.telefono = request.form["telefono"]
         admin.email = request.form["email"]
 
-        admin_dao.actualizar(admin)
-        flash("Administrador actualizado correctamente")
+        exito = admin_dao.actualizar(admin)
+        flash("Administrador actualizado correctamente" if exito else "Error al actualizar administrador")
         return redirect(url_for("administrador.listar_administradores"))
 
     return render_template("administrador/editar_admin.html", administrador=admin)
 
 
-# ------------------------------
 # Eliminar administrador
-# ------------------------------
 @admin_bp.route("/eliminar/<int:admin_id>")
 @admin_required
 def eliminar_administrador(admin_id):
-    admin_dao.eliminar(admin_id)
-    flash("Administrador eliminado correctamente")
+    exito = admin_dao.eliminar(admin_id)
+    flash("Administrador eliminado correctamente" if exito else "Error al eliminar administrador")
     return redirect(url_for("administrador.listar_administradores"))

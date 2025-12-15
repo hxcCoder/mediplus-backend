@@ -1,22 +1,17 @@
+# controller/auth_c.py
+from typing import Optional
 from models.usuario import Usuario
-from typing import TYPE_CHECKING, Optional
-if TYPE_CHECKING:
-    from dao.usuario_dao import UsuarioDAO
-from utils.security import hash_password
-
+from dao.usuario_dao import UsuarioDAO
+from utils.security import hash_password, check_password
 
 class AuthController:
-    """Controller para registro/login. Acepta un DAO opcional para facilitar pruebas."""
+    """Controller para registro y login de usuarios."""
 
-    def __init__(self, usuario_dao: Optional['UsuarioDAO'] = None):
-        # Importar DAO solo cuando sea necesario para evitar dependencias pesadas en tiempo de import
-        if usuario_dao is None:
-            from dao.usuario_dao import UsuarioDAO
-            usuario_dao = UsuarioDAO()
-        self.usuario_dao = usuario_dao
+    def __init__(self, usuario_dao: Optional[UsuarioDAO] = None):
+        self.usuario_dao = usuario_dao or UsuarioDAO()
 
     def registrar_usuario(self, usuario: Usuario) -> bool:
-        # Validación básica
+        """Registra un nuevo usuario, hasheando la contraseña."""
         if not usuario.nombre_usuario or not usuario.clave:
             return False
 
@@ -25,13 +20,20 @@ class AuthController:
         if existente:
             return False
 
-        # Hash de contraseña y almacenar como str
+        # Hashear la contraseña
         usuario.clave = hash_password(usuario.clave).decode("utf-8")
-
         return self.usuario_dao.crear(usuario)
 
-    def login(self, nombre_usuario: str, clave: str) -> Usuario | None:
+    def login(self, nombre_usuario: str, clave: str) -> Optional[Usuario]:
         """Intenta autenticar y devuelve Usuario o None"""
         if not nombre_usuario or not clave:
             return None
-        return self.usuario_dao.login(nombre_usuario, clave)
+
+        usuario = self.usuario_dao.obtener_por_nombre_usuario(nombre_usuario)
+        if not usuario:
+            return None
+
+        if check_password(clave, usuario.clave):
+            return usuario
+
+        return None

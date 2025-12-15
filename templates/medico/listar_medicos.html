@@ -5,45 +5,32 @@
     <title>Lista de Médicos</title>
 </head>
 <body>
-    <h2>Lista de Médicos</h2>
-
-    <!-- Mensajes flash -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <div style="color: green">{{ msg }}</div>
+    <h1>Médicos</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Especialidad</th>
+                <th>Horario</th>
+                <th>Fecha Ingreso</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in medicos %}
+            <tr>
+                <td>{{ m.id }}</td>
+                <td>{{ m.nombre_usuario }}</td>
+                <td>{{ m.nombre }}</td>
+                <td>{{ m.apellido }}</td>
+                <td>{{ m.especialidad }}</td>
+                <td>{{ m.horario_atencion }}</td>
+                <td>{{ m.fecha_ingreso }}</td>
+            </tr>
             {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <a href="{{ url_for('medico.crear_medico') }}">Crear Nuevo Médico</a>
-
-    <table border="1" cellpadding="5" cellspacing="0">
-        <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-            <th>Especialidad</th>
-            <th>Acciones</th>
-        </tr>
-        {% for m in medicos %}
-        <tr>
-            <td>{{ m.id }}</td>
-            <td>{{ m.nombre_usuario }}</td>
-            <td>{{ m.nombre }}</td>
-            <td>{{ m.apellido }}</td>
-            <td>{{ m.telefono }}</td>
-            <td>{{ m.email }}</td>
-            <td>{{ m.especialidad }}</td>
-            <td>
-                <a href="{{ url_for('medico.editar_medico', medico_id=m.id) }}">Editar</a>
-                <a href="{{ url_for('medico.eliminar_medico', medico_id=m.id) }}">Eliminar</a>
-            </td>
-        </tr>
-        {% endfor %}
+        </tbody>
     </table>
 </body>
 </html>

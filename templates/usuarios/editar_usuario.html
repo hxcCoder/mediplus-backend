@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Editar Usuario</h1>
+    <form action="{{ url_for('usuario.actualizar_usuario', id=usuario.id) }}" method="post">
+        <label>Nombre de usuario:</label>
+        <input type="text" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" required><br>
+
+        <label>Nombre:</label>
+        <input type="text" name="nombre" value="{{ usuario.nombre }}" required><br>
+
+        <label>Apellido:</label>
+        <input type="text" name="apellido" value="{{ usuario.apellido }}" required><br>
+
+        <label>Fecha de nacimiento:</label>
+        <input type="date" name="fecha_nacimiento" value="{{ usuario.fecha_nacimiento }}"><br>
+
+        <label>Teléfono:</label>
+        <input type="text" name="telefono" value="{{ usuario.telefono }}"><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ usuario.email }}"><br>
+
+        <label>Tipo:</label>
+        <select name="tipo">
+            <option value="PACIENTE" {% if usuario.tipo == "PACIENTE" %}selected{% endif %}>Paciente</option>
+            <option value="MEDICO" {% if usuario.tipo == "MEDICO" %}selected{% endif %}>Médico</option>
+            <option value="ADMIN" {% if usuario.tipo == "ADMIN" %}selected{% endif %}>Administrador</option>
+        </select><br><br>
+
+        <button type="submit">Actualizar Usuario</button>
+    </form>
+    <a href="{{ url_for('usuario.listar_usuarios_form') }}">Volver a la lista</a>
+</body>
+</html>

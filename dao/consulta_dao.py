@@ -1,96 +1,84 @@
-# dao/consulta_dao.py
 from db.connection import get_connection
 from models.consulta import Consulta
 
 class ConsultaDAO:
 
-    # Crear consulta
-    def crear(self, consulta: Consulta):
+    def crear(self, consulta: Consulta) -> bool:
         conn = get_connection()
         cursor = conn.cursor()
+        try:
+            if not consulta.id_paciente or not consulta.id_medico:
+                raise ValueError("Se requiere ID de paciente y médico")
+            cursor.execute("""
+                INSERT INTO consulta (id_paciente, id_medico, id_receta, fecha, comentarios, valor)
+                VALUES (:id_paciente, :id_medico, :id_receta, :fecha, :comentarios, :valor)
+            """, {
+                "id_paciente": consulta.id_paciente,
+                "id_medico": consulta.id_medico,
+                "id_receta": consulta.id_receta,
+                "fecha": consulta.fecha,
+                "comentarios": consulta.comentarios,
+                "valor": consulta.valor
+            })
+            conn.commit()
+            return True
+        finally:
+            cursor.close()
+            conn.close()
 
-        sql = """
-            INSERT INTO consulta (id_paciente, id_medico, id_receta, fecha, comentarios, valor)
-            VALUES (:1, :2, :3, :4, :5, :6)
-        """
-
-        cursor.execute(sql, [
-            consulta.id_paciente,
-            consulta.id_medico,
-            consulta.id_receta,
-            consulta.fecha,
-            consulta.comentarios,
-            consulta.valor
-        ])
-
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
-
-    # Obtener consulta por ID
-    def obtener_por_id(self, consulta_id):
+    def obtener_por_id(self, consulta_id: int) -> Consulta | None:
         conn = get_connection()
         cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT id, id_paciente, id_medico, id_receta, fecha, comentarios, valor FROM consulta WHERE id = :id", {"id": consulta_id})
+            row = cursor.fetchone()
+            return Consulta(*row) if row else None
+        finally:
+            cursor.close()
+            conn.close()
 
-        sql = "SELECT * FROM consulta WHERE id = :id"
-        cursor.execute(sql, {"id": consulta_id})
-        row = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-
-        if row:
-            return Consulta(*row)
-        return None
-
-    # Listar todas las consultas
-    def listar(self):
+    def listar(self) -> list[Consulta]:
         conn = get_connection()
         cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT id, id_paciente, id_medico, id_receta, fecha, comentarios, valor FROM consulta ORDER BY fecha DESC")
+            rows = cursor.fetchall()
+            return [Consulta(*r) for r in rows]
+        finally:
+            cursor.close()
+            conn.close()
 
-        cursor.execute("SELECT * FROM consulta ORDER BY fecha DESC")
-        rows = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-        return [Consulta(*r) for r in rows]
-
-    # Actualizar consulta
-    def actualizar(self, consulta: Consulta):
+    def actualizar(self, consulta: Consulta) -> bool:
         conn = get_connection()
         cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                UPDATE consulta
+                SET id_paciente=:id_paciente, id_medico=:id_medico, id_receta=:id_receta,
+                    fecha=:fecha, comentarios=:comentarios, valor=:valor
+                WHERE id=:id
+            """, {
+                "id_paciente": consulta.id_paciente,
+                "id_medico": consulta.id_medico,
+                "id_receta": consulta.id_receta,
+                "fecha": consulta.fecha,
+                "comentarios": consulta.comentarios,
+                "valor": consulta.valor,
+                "id": consulta.id
+            })
+            conn.commit()
+            return True
+        finally:
+            cursor.close()
+            conn.close()
 
-        sql = """
-            UPDATE consulta
-            SET id_paciente=:1, id_medico=:2, id_receta=:3,
-                fecha=:4, comentarios=:5, valor=:6
-            WHERE id=:7
-        """
-
-        cursor.execute(sql, [
-            consulta.id_paciente,
-            consulta.id_medico,
-            consulta.id_receta,
-            consulta.fecha,
-            consulta.comentarios,
-            consulta.valor,
-            consulta.id
-        ])
-
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
-
-    # Eliminar consulta
-    def eliminar(self, consulta_id):
+    def eliminar(self, consulta_id: int) -> bool:
         conn = get_connection()
         cursor = conn.cursor()
-
-        cursor.execute("DELETE FROM consulta WHERE id=:id", {"id": consulta_id})
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-        return True
+        try:
+            cursor.execute("DELETE FROM consulta WHERE id=:id", {"id": consulta_id})
+            conn.commit()
+            return True
+        finally:
+            cursor.close()
+            conn.close()

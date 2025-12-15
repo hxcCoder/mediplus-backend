@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Agendas</title>
+</head>
+<body>
+    <h2>Agendas</h2>
+    <a href="{{ url_for('agenda.crear_agenda') }}">Crear Nueva Agenda</a>
+
+    <table border="1" cellpadding="5">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ID Paciente</th>
+                <th>ID Médico</th>
+                <th>Fecha Consulta</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in agendas %}
+            <tr>
+                <td>{{ a.id }}</td>
+                <td>{{ a.id_paciente }}</td>
+                <td>{{ a.id_medico }}</td>
+                <td>{{ a.fecha_consulta }}</td>
+                <td>{{ a.estado }}</td>
+                <td>
+                    <a href="{{ url_for('agenda.editar_agenda', agenda_id=a.id) }}">Editar</a> |
+                    <a href="{{ url_for('agenda.eliminar_agenda', agenda_id=a.id) }}">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+    

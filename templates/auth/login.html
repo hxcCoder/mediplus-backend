@@ -1,3 +1,4 @@
+<!-- templates/auth/login.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,26 +7,34 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
         .container { max-width: 400px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; }
-        input { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
         button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .flash { color: red; margin-bottom: 10px; text-align: center; }
+        a { text-decoration: none; color: #007bff; display: block; text-align: center; margin-top: 10px; }
+        a:hover { color: #0056b3; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Iniciar sesión</h2>
+        <h2>Iniciar Sesión</h2>
+
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                {% for m in messages %}
-                    <p style="color:red;">{{ m }}</p>
+                {% for msg in messages %}
+                    <div class="flash">{{ msg }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('login.login_action') }}">
-            <input type="text" name="nombre_usuario" placeholder="Usuario" required>
+            <input type="text" name="nombre_usuario" placeholder="Nombre de usuario" required>
             <input type="password" name="clave" placeholder="Contraseña" required>
-            <button type="submit">Entrar</button>
+            <button type="submit">Iniciar Sesión</button>
         </form>
-        <p>¿No tienes cuenta? <a href="{{ url_for('registro.register_form') }}">Regístrate</a></p>
+
+        <a href="{{ url_for('registro.register_form') }}">¿No tienes cuenta? Regístrate</a>
     </div>
 </body>
 </html>

@@ -2,36 +2,35 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Eliminar Insumo - MediPlus</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-        .container { max-width: 400px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; text-align: center; }
-        button { padding: 10px 20px; margin: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-confirm { background-color: #dc3545; color: white; }
-        .btn-confirm:hover { background-color: #a71d2a; }
-        .btn-cancel { background-color: #6c757d; color: white; }
-        .btn-cancel:hover { background-color: #5a6268; }
-        .flash { color: red; margin-bottom: 12px; }
-    </style>
+    <title>Editar Insumo</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Eliminar Insumo</h2>
+    <h2>Editar Insumo</h2>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <div class="flash">{{ msg }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div style="color:red">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-        <p>¿Está seguro que desea eliminar el insumo <strong>{{ insumo.nombre }}</strong>?</p>
+    <form method="POST">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" value="{{ insumo.nombre }}" required><br>
 
-        <form action="{{ url_for('insumo.eliminar_insumo', insumo_id=insumo.id) }}" method="POST">
-            <button type="submit" class="btn-confirm">Sí, eliminar</button>
-            <a href="{{ url_for('insumo.listar_insumos') }}" class="btn-cancel">Cancelar</a>
-        </form>
-    </div>
+        <label>Tipo:</label>
+        <input type="text" name="tipo" value="{{ insumo.tipo }}" required><br>
+
+        <label>Stock:</label>
+        <input type="number" name="stock" value="{{ insumo.stock }}" min="0" required><br>
+
+        <label>Costo (USD):</label>
+        <input type="number" name="costo_usd" value="{{ insumo.costo_usd }}" step="0.01" min="0" required><br>
+
+        <button type="submit">Actualizar</button>
+    </form>
+
+    <a href="{{ url_for('insumo.listar_insumos') }}">Volver a la lista</a>
 </body>
 </html>

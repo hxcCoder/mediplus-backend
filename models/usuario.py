@@ -1,12 +1,13 @@
 from typing import Optional
 from datetime import date
 
+
 class Usuario:
     def __init__(
         self,
         id: Optional[int] = None,
         nombre_usuario: str = "",
-        clave: str = "",
+        clave: str = "",  # contraseña hasheada
         nombre: str = "",
         apellido: str = "",
         fecha_nacimiento: Optional[date] = None,
@@ -23,6 +24,22 @@ class Usuario:
         self.telefono = telefono
         self.email = email
         self.tipo = tipo
+
+    # --------- Lógica de dominio ---------
+
+    def nombre_completo(self) -> str:
+        return f"{self.nombre} {self.apellido}".strip()
+
+    def es_admin(self) -> bool:
+        return self.tipo.upper() == "ADMIN"
+
+    def es_medico(self) -> bool:
+        return self.tipo.upper() == "MEDICO"
+
+    def es_paciente(self) -> bool:
+        return self.tipo.upper() == "PACIENTE"
+
+    # --------- Presentación segura ---------
 
     def to_dict(self) -> dict:
         return {

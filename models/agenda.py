@@ -4,8 +4,8 @@ class Agenda:
         self.id = id
         self.id_paciente = id_paciente
         self.id_medico = id_medico
-        self.fecha_consulta = fecha_consulta  # Se recomienda usar datetime
-        self.estado = estado  # pendiente, confirmado, cancelado, etc.
+        self.fecha_consulta = fecha_consulta  
+        self.estado = estado  
 
     def to_dict(self):
         return {

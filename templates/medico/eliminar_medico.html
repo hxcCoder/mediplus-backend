@@ -10,7 +10,7 @@
         button { padding: 10px 20px; margin: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-confirm { background-color: #dc3545; color: white; }
         .btn-confirm:hover { background-color: #a71d2a; }
-        .btn-cancel { background-color: #6c757d; color: white; }
+        .btn-cancel { background-color: #6c757d; color: white; text-decoration: none; display: inline-block; line-height: normal; padding: 10px 20px; border-radius: 4px; }
         .btn-cancel:hover { background-color: #5a6268; }
     </style>
 </head>
@@ -21,7 +21,7 @@
 
         <form action="{{ url_for('medico.eliminar_medico', medico_id=medico.id) }}" method="POST">
             <button type="submit" class="btn-confirm">Sí, eliminar</button>
-            <a href="{{ url_for('medico.listar_medicos') }}" class="btn-cancel">Cancelar</a>
+            <a href="{{ url_for('medico.form_listar_medicos') }}" class="btn-cancel">Cancelar</a>
         </form>
     </div>
 </body>

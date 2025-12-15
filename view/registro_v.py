@@ -1,18 +1,14 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from dao.usuario_dao import UsuarioDAO
 from controller.usuario_c import UsuarioController
 from models.usuario import Usuario
 from datetime import datetime
 
 registro_bp = Blueprint("registro", __name__)
-usuario_dao = UsuarioDAO()
-usuario_controller = UsuarioController(usuario_dao)
-
+usuario_controller = UsuarioController()
 
 @registro_bp.route("/register", methods=["GET"])
 def register_form():
     return render_template("auth/register.html")
-
 
 @registro_bp.route("/register", methods=["POST"])
 def register_action():

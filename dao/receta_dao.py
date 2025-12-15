@@ -10,15 +10,15 @@ class RecetaDAO:
             cursor.execute("""
                 INSERT INTO receta
                 (id_paciente, id_medico, descripcion, medicamentos_recetados, costo_clp, fecha)
-                VALUES (:1, :2, :3, :4, :5, :6)
-            """, (
-                receta.id_paciente,
-                receta.id_medico,
-                receta.descripcion,
-                receta.medicamentos_recetados,
-                receta.costo_clp,
-                receta.fecha
-            ))
+                VALUES (:id_paciente, :id_medico, :descripcion, :medicamentos, :costo, :fecha)
+            """, {
+                "id_paciente": receta.id_paciente,
+                "id_medico": receta.id_medico,
+                "descripcion": receta.descripcion,
+                "medicamentos": receta.medicamentos_recetados,
+                "costo": receta.costo_clp,
+                "fecha": receta.fecha
+            })
             conn.commit()
             return True
         except Exception as e:
@@ -36,12 +36,10 @@ class RecetaDAO:
             cursor.execute("""
                 SELECT id, id_paciente, id_medico, descripcion, medicamentos_recetados, costo_clp, fecha
                 FROM receta
-                WHERE id = :1
-            """, (id_receta,))
+                WHERE id = :id
+            """, {"id": id_receta})
             row = cursor.fetchone()
-            if row:
-                return Receta(*row)
-            return None
+            return Receta(*row) if row else None
         finally:
             cursor.close()
             conn.close()
@@ -49,7 +47,6 @@ class RecetaDAO:
     def listar_todas(self) -> list[Receta]:
         conn = get_connection()
         cursor = conn.cursor()
-        recetas = []
         try:
             cursor.execute("""
                 SELECT id, id_paciente, id_medico, descripcion, medicamentos_recetados, costo_clp, fecha
@@ -57,9 +54,7 @@ class RecetaDAO:
                 ORDER BY fecha DESC
             """)
             rows = cursor.fetchall()
-            for row in rows:
-                recetas.append(Receta(*row))
-            return recetas
+            return [Receta(*r) for r in rows]
         finally:
             cursor.close()
             conn.close()
@@ -70,18 +65,18 @@ class RecetaDAO:
         try:
             cursor.execute("""
                 UPDATE receta
-                SET id_paciente=:1, id_medico=:2, descripcion=:3,
-                    medicamentos_recetados=:4, costo_clp=:5, fecha=:6
-                WHERE id=:7
-            """, (
-                receta.id_paciente,
-                receta.id_medico,
-                receta.descripcion,
-                receta.medicamentos_recetados,
-                receta.costo_clp,
-                receta.fecha,
-                receta.id
-            ))
+                SET id_paciente=:id_paciente, id_medico=:id_medico, descripcion=:descripcion,
+                    medicamentos_recetados=:medicamentos, costo_clp=:costo, fecha=:fecha
+                WHERE id=:id
+            """, {
+                "id_paciente": receta.id_paciente,
+                "id_medico": receta.id_medico,
+                "descripcion": receta.descripcion,
+                "medicamentos": receta.medicamentos_recetados,
+                "costo": receta.costo_clp,
+                "fecha": receta.fecha,
+                "id": receta.id
+            })
             conn.commit()
             return True
         except Exception as e:
@@ -96,7 +91,7 @@ class RecetaDAO:
         conn = get_connection()
         cursor = conn.cursor()
         try:
-            cursor.execute("DELETE FROM receta WHERE id = :1", (id_receta,))
+            cursor.execute("DELETE FROM receta WHERE id = :id", {"id": id_receta})
             conn.commit()
             return True
         except Exception as e:

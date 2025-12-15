@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Eliminar Insumo</title>
+</head>
+<body>
+    <h2>Eliminar Insumo</h2>
+    <p>¿Estás seguro que deseas eliminar el insumo "{{ insumo.nombre }}"?</p>
+
+    <form method="POST" action="{{ url_for('insumo.eliminar_insumo', insumo_id=insumo.id) }}">
+        <button type="submit" style="background-color:red;color:white;">Sí, eliminar</button>
+        <a href="{{ url_for('insumo.listar_insumos') }}">Cancelar</a>
+    </form>
+</body>
+</html>

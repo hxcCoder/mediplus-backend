@@ -3,11 +3,11 @@ from flask import session, jsonify, request, redirect, url_for, flash
 
 
 def login_required(f):
+    """Verifica que el usuario esté autenticado."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        # Acepta dos estilos: sesión con clave 'user' (dict) o claves separadas 'user_id'/'tipo'
-        if "user" not in session and "user_id" not in session:
-            # Si la petición acepta HTML, redirigimos al login con flash
+        user = session.get("user") or {"id": session.get("user_id"), "tipo": session.get("tipo")}
+        if not user.get("id"):
             if request.accept_mimetypes.accept_html:
                 flash("Debes iniciar sesión")
                 return redirect(url_for("login.login_form"))
@@ -16,27 +16,37 @@ def login_required(f):
     return decorated
 
 
-def admin_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        user = session.get("user")
-        tipo = None
-        if user and isinstance(user, dict):
-            tipo = user.get("tipo")
-        else:
-            tipo = session.get("tipo")
+def role_required(*roles):
+    """
+    Verifica que el usuario tenga uno de los roles permitidos.
+    Uso: @role_required("admin"), @role_required("medico", "admin")
+    """
+    roles = [r.lower() for r in roles]
 
-        if not tipo:
-            if request.accept_mimetypes.accept_html:
-                flash("Debes iniciar sesión")
-                return redirect(url_for("login.login_form"))
-            return jsonify({"error": "No autenticado"}), 401
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            user = session.get("user") or {"id": session.get("user_id"), "tipo": session.get("tipo")}
+            tipo = str(user.get("tipo", "")).lower()
 
-        if str(tipo).lower() != "admin":
-            if request.accept_mimetypes.accept_html:
-                flash("Acceso denegado: requiere rol admin")
-                return redirect(url_for("login.login_form"))
-            return jsonify({"error": "Acceso denegado: requiere rol admin"}), 403
+            if not user.get("id"):
+                if request.accept_mimetypes.accept_html:
+                    flash("Debes iniciar sesión")
+                    return redirect(url_for("login.login_form"))
+                return jsonify({"error": "No autenticado"}), 401
 
-        return f(*args, **kwargs)
-    return decorated
+            if tipo not in roles:
+                if request.accept_mimetypes.accept_html:
+                    flash("Acceso denegado: rol no autorizado")
+                    return redirect(url_for("login.login_form"))
+                return jsonify({"error": f"Acceso denegado: requiere rol {roles}"}), 403
+
+            return f(*args, **kwargs)
+        return decorated
+    return decorator
+
+
+# Alias para compatibilidad
+admin_required = role_required("admin")
+medico_required = role_required("medico")
+paciente_required = role_required("paciente")

@@ -13,7 +13,6 @@ def login_action():
     nombre_usuario = request.form.get("nombre_usuario")
     clave = request.form.get("clave")
 
-    # Validar que no sean None ni vacíos
     if not nombre_usuario or not clave:
         flash("Debes completar todos los campos")
         return redirect(url_for("login.login_form"))
@@ -27,15 +26,15 @@ def login_action():
     session["user_id"] = usuario.id
     session["username"] = usuario.nombre_usuario
     session["tipo"] = usuario.tipo
-    # También guardamos un objeto 'user' por compatibilidad con middleware
     session["user"] = {"id": usuario.id, "username": usuario.nombre_usuario, "tipo": usuario.tipo}
 
     # Redirigir según tipo
-    if usuario.tipo == "admin":
-        return redirect(url_for("menu_admin.menu"))
-    elif usuario.tipo == "medico":
+    tipo_lower = usuario.tipo.lower()
+    if tipo_lower == "admin":
+        return redirect(url_for("administrador.menu_admin"))
+    elif tipo_lower == "medico":
         return redirect(url_for("menu_medico.menu"))
-    elif usuario.tipo == "paciente":
+    elif tipo_lower == "paciente":
         return redirect(url_for("menu_paciente.menu"))
     else:
         flash("Tipo de usuario desconocido")

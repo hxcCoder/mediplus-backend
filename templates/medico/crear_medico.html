@@ -5,28 +5,34 @@
     <title>Crear Médico</title>
 </head>
 <body>
-    <h2>Crear Médico</h2>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <div style="color: red">{{ msg }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <form method="POST">
+    <h1>Crear Médico</h1>
+    <form id="formCrearMedico">
         <input type="text" name="nombre_usuario" placeholder="Nombre de usuario" required><br>
         <input type="password" name="clave" placeholder="Contraseña" required><br>
         <input type="text" name="nombre" placeholder="Nombre" required><br>
         <input type="text" name="apellido" placeholder="Apellido" required><br>
-        <input type="date" name="fecha_nacimiento" placeholder="Fecha de nacimiento" required><br>
+        <input type="date" name="fecha_nacimiento" placeholder="Fecha de nacimiento"><br>
         <input type="text" name="telefono" placeholder="Teléfono"><br>
         <input type="email" name="email" placeholder="Email"><br>
         <input type="text" name="especialidad" placeholder="Especialidad"><br>
+        <input type="text" name="horario_atencion" placeholder="Horario de atención"><br>
+        <input type="date" name="fecha_ingreso" placeholder="Fecha de ingreso"><br>
         <button type="submit">Crear</button>
     </form>
 
-    <a href="{{ url_for('medico.listar_medicos') }}">Volver a la lista</a>
+    <script>
+        const form = document.getElementById('formCrearMedico');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(form));
+            const resp = await fetch('/medicos/crear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await resp.json();
+            alert(result.mensaje || result.error);
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Usuarios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Usuarios Registrados</h1>
+    <a href="{{ url_for('usuario.crear_usuario_form') }}">Crear Nuevo Usuario</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Fecha Nacimiento</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.nombre_usuario }}</td>
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.apellido }}</td>
+                <td>{{ u.fecha_nacimiento }}</td>
+                <td>{{ u.telefono }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.tipo }}</td>
+                <td>
+                    <a href="{{ url_for('usuario.editar_usuario_form', id=u.id) }}">Editar</a> |
+                    <a href="{{ url_for('usuario.eliminar_usuario', id=u.id) }}">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

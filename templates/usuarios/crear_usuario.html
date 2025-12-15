@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Crear Usuario</h1>
+    <form action="{{ url_for('usuario.crear_usuario') }}" method="post">
+        <label>Nombre de usuario:</label>
+        <input type="text" name="nombre_usuario" required><br>
+
+        <label>Contraseña:</label>
+        <input type="password" name="clave" required><br>
+
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required><br>
+
+        <label>Apellido:</label>
+        <input type="text" name="apellido" required><br>
+
+        <label>Fecha de nacimiento:</label>
+        <input type="date" name="fecha_nacimiento"><br>
+
+        <label>Teléfono:</label>
+        <input type="text" name="telefono"><br>
+
+        <label>Email:</label>
+        <input type="email" name="email"><br>
+
+        <label>Tipo:</label>
+        <select name="tipo">
+            <option value="PACIENTE">Paciente</option>
+            <option value="MEDICO">Médico</option>
+            <option value="ADMIN">Administrador</option>
+        </select><br><br>
+
+        <button type="submit">Crear Usuario</button>
+    </form>
+    <a href="{{ url_for('usuario.listar_usuarios_form') }}">Volver a la lista</a>
+</body>
+</html>

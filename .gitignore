@@ -1,5 +1,22 @@
-__pycache__/
-.env
+# Entorno virtual
 venv/
+.env/
+
+# Variables de entorno reales
+.env
+
+# Archivos Python
+__pycache__/
 *.pyc
-*.pdf
+
+# Flask
+instance/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db

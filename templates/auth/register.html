@@ -1,3 +1,4 @@
+<!-- templates/auth/register.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,15 +6,14 @@
     <title>Registro de Usuario - MediPlus</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-        .container { max-width: 500px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 400px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; }
         h2 { text-align: center; margin-bottom: 20px; }
-        input, select { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
-        button { width: 100%; padding: 10px; margin-top: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input, select { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
         button:hover { background-color: #0056b3; }
-        .flash { color: red; text-align: center; margin-bottom: 12px; }
-        .links { text-align: center; margin-top: 12px; }
-        a { text-decoration: none; color: #007bff; }
-        a:hover { text-decoration: underline; }
+        .flash { color: red; margin-bottom: 10px; text-align: center; }
+        a { text-decoration: none; color: #007bff; display: block; text-align: center; margin-top: 10px; }
+        a:hover { color: #0056b3; }
     </style>
 </head>
 <body>
@@ -28,26 +28,24 @@
             {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('registro.register_action') }}" method="POST">
+        <form method="POST" action="{{ url_for('registro.register_action') }}">
             <input type="text" name="nombre_usuario" placeholder="Nombre de usuario" required>
             <input type="password" name="clave" placeholder="Contraseña" required>
             <input type="text" name="nombre" placeholder="Nombre">
             <input type="text" name="apellido" placeholder="Apellido">
             <input type="date" name="fecha_nacimiento" placeholder="Fecha de nacimiento">
             <input type="text" name="telefono" placeholder="Teléfono">
-            <input type="email" name="email" placeholder="Correo electrónico">
+            <input type="email" name="email" placeholder="Email">
             <select name="tipo" required>
-                <option value="">Seleccione tipo de usuario</option>
-                <option value="paciente">Paciente</option>
-                <option value="medico">Médico</option>
-                <option value="admin">Administrador</option>
+                <option value="" disabled selected>Selecciona tipo de usuario</option>
+                <option value="PACIENTE">Paciente</option>
+                <option value="MEDICO">Médico</option>
+                <option value="ADMIN">Administrador</option>
             </select>
-            <button type="submit">Registrar</button>
+            <button type="submit">Registrarse</button>
         </form>
 
-        <div class="links">
-            <a href="{{ url_for('login.login_form') }}">Volver al login</a>
-        </div>
+        <a href="{{ url_for('login.login_form') }}">¿Ya tienes cuenta? Inicia sesión</a>
     </div>
 </body>
 </html>

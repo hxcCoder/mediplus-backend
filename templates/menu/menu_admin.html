@@ -21,7 +21,6 @@
     <div class="container">
         <h2>Bienvenido, {{ username }}</h2>
 
-        <!-- Mensajes flash -->
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for msg in messages %}
@@ -30,7 +29,6 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Botones de gestión general -->
         <div style="text-align: center; margin-bottom: 20px;">
             <a href="{{ url_for('usuario.listar_usuarios') }}" class="menu-button">Gestionar Usuarios</a>
             <a href="{{ url_for('consulta.listar_consultas') }}" class="menu-button">Gestionar Consultas</a>
@@ -38,7 +36,6 @@
             <a href="{{ url_for('insumo.listar_insumos') }}" class="menu-button">Gestionar Insumos</a>
         </div>
 
-        <!-- Tabla de administradores -->
         <h3>Administradores registrados</h3>
         <table>
             <thead>
@@ -51,7 +48,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for admin in admins %}
+                {% for admin in administradores %}
                 <tr>
                     <td>{{ admin.id }}</td>
                     <td>{{ admin.nombre_usuario }}</td>
@@ -66,13 +63,11 @@
             </tbody>
         </table>
 
-        <!-- Botón Crear Administrador -->
         <div style="text-align: center;">
             <a href="{{ url_for('administrador.crear_administrador') }}" class="menu-button">Crear Nuevo Administrador</a>
         </div>
 
-        <!-- Cerrar sesión -->
-        <a href="{{ url_for('auth.logout') }}" class="logout">Cerrar sesión</a>
+        <a href="{{ url_for('login.logout') }}" class="logout">Cerrar sesión</a>
     </div>
 </body>
 </html>
