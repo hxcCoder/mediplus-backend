@@ -1,17 +1,17 @@
 # Proyecto Prototipo MediPlus
 
-## ASIGNATURA
+## Asignatura
 Programación Orientada a Objetos Seguro - Sección 3
 
-## CARRERA
+## Carrera
 Ingeniería en Informática
 
-## ESTUDIANTE
+## Estudiante
 Benjamin millalonco
 
 ---
 
-## 1. Introducción
+## 1. Introduccion
 La clinica MediPlus realiza actualmente el registro de pacientes, medicos y consultas en planillas Excel y formularios en papel. Esto genera perdida de información, dificultad para realizar seguimiento de consultas previas y problemas de seguridad debido a la falta de control de acceso.  
 
 El proyecto desarrolla un prototipo de sistema de informacion que permite gestionar usuarios, consultas, recetas, insumos y agenda de manera segura, utilizando bases de datos y autenticación mediante hash de contraseñas.
