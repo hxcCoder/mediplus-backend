@@ -8,7 +8,7 @@
 <body>
     <div class="container">
         <!-- Saludo al usuario -->
-        <h2>Bienvenido, {{ username }}</h2>
+        <h2>Bienvenido, {{ session.get('usuario_nombre', 'Administrador') }}</h2>
 
         <!-- Mensajes flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -21,42 +21,50 @@
 
         <!-- Menú de acciones -->
         <div class="menu">
+            <!-- Usuarios -->
             <a href="{{ url_for('usuario.listar_usuarios_api') }}" class="menu-button">Gestionar Usuarios</a>
-            <a href="{{ url_for('agenda_bp.listar_agenda') }}" class="menu-button">Gestionar Consultas</a>
+
+            <!-- Consultas -->
+            <a href="{{ url_for('consulta_bp.listar_consultas') }}" class="menu-button">Gestionar Consultas</a>
+            <a href="{{ url_for('consulta_bp.crear_consulta') }}" class="menu-button">Crear Consulta</a>
+
+            <!-- Recetas -->
             <a href="{{ url_for('receta_bp.listar_recetas') }}" class="menu-button">Gestionar Recetas</a>
+            <a href="{{ url_for('receta_bp.crear_receta') }}" class="menu-button">Crear Receta</a>
+
+            <!-- Insumos -->
             <a href="{{ url_for('insumo_bp.listar_insumos') }}" class="menu-button">Gestionar Insumos</a>
+            <a href="{{ url_for('insumo_bp.crear_insumo') }}" class="menu-button">Crear Insumo</a>
         </div>
 
-        <!-- Tabla de administradores -->
-        <h3>Administradores registrados</h3>
+        <!-- Tabla de administradores (solo si se requiere mostrar) -->
         {% if administradores %}
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for admin in administradores %}
-                <tr>
-                    <td>{{ admin.id }}</td>
-                    <td>{{ admin.nombre_usuario }}</td>
-                    <td>{{ admin.nombre }}</td>
-                    <td>{{ admin.apellido }}</td>
-                    <td>
-                        <a href="{{ url_for('admin_bp.editar_administrador', admin_id=admin.id) }}" class="action-button">Editar</a>
-                        <a href="{{ url_for('admin_bp.eliminar_administrador', admin_id=admin.id) }}" class="action-button" onclick="return confirm('¿Seguro que deseas eliminar este administrador?');">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p>No hay administradores registrados.</p>
+            <h3>Administradores registrados</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for admin in administradores %}
+                    <tr>
+                        <td>{{ admin.id }}</td>
+                        <td>{{ admin.nombre_usuario }}</td>
+                        <td>{{ admin.nombre }}</td>
+                        <td>{{ admin.apellido }}</td>
+                        <td>
+                            <a href="{{ url_for('admin_bp.editar_administrador', admin_id=admin.id) }}" class="action-button">Editar</a>
+                            <a href="{{ url_for('admin_bp.eliminar_administrador', admin_id=admin.id) }}" class="action-button" onclick="return confirm('¿Seguro que deseas eliminar este administrador?');">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% endif %}
 
         <!-- Logout -->

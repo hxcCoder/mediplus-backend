@@ -40,3 +40,4 @@ def role_required(*roles):
 admin_required = role_required("admin")
 medico_required = role_required("medico")
 paciente_required = role_required("paciente")
+medico_o_admin_required = role_required("medico", "admin")
