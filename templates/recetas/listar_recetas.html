@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Recetas</title>
+</head>
+<body>
+
+<h2>Listado de Recetas</h2>
+
+<a href="{{ url_for('receta_bp.crear_receta') }}">➕ Crear nueva receta</a>
+<br><br>
+
+<table border="1" cellpadding="8">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ID Paciente</th>
+            <th>ID Médico</th>
+            <th>Descripción</th>
+            <th>Medicamentos</th>
+            <th>Costo (CLP)</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in recetas %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.id_paciente }}</td>
+            <td>{{ r.id_medico }}</td>
+            <td>{{ r.descripcion }}</td>
+            <td>{{ r.medicamentos_recetados }}</td>
+            <td>${{ "{:,}".format(r.costo_clp) }}</td>
+            <td>{{ r.fecha }}</td>
+            <td>
+                <a href="{{ url_for('receta_bp.editar_receta', id_receta=r.id) }}">✏️ Editar</a>
+
+                <form action="{{ url_for('receta_bp.eliminar_receta', id_receta=r.id) }}"
+                      method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('¿Eliminar receta?')">
+                        🗑 Eliminar
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

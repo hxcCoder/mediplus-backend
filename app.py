@@ -29,7 +29,9 @@ def create_app():
     from view.menu_admin_v import menu_admin_bp
     from view.menu_medico_v import menu_medico_bp
     from view.menu_paciente_v import menu_paciente_bp
-
+    from view.consulta_v import consulta_bp
+    
+    app.register_blueprint(consulta_bp)
     app.register_blueprint(login_bp)
     app.register_blueprint(registro_bp)
     app.register_blueprint(auth_bp)

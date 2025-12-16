@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Paciente - MediPlus</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Bienvenido, {{ username }}</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="flash {{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <a href="{{ url_for('consulta.listar_consultas') }}" class="menu-button">Mis Consultas</a>
+        <a href="{{ url_for('receta.listar_recetas') }}" class="menu-button">Mis Recetas</a>
+        <a href="{{ url_for('login.logout') }}" class="logout">Cerrar sesión</a>
+    </div>
+</body>
+</html>

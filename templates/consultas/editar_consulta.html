@@ -3,72 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Editar Consulta - MediPlus</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; }
-        h2 { text-align: center; margin-bottom: 20px; }
-        select, input, textarea { width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
-        button { width: 100%; padding: 10px; margin-top: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #218838; }
-        .flash { color: red; text-align: center; margin-bottom: 12px; }
-        a { display: block; text-align: center; margin-top: 12px; color: #007bff; }
-        a:hover { text-decoration: underline; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h2>Editar Consulta</h2>
+        <h2>Editar Consulta ID {{ consulta.id }}</h2>
 
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for msg in messages %}
-                    <div class="flash">{{ msg }}</div>
+                {% for category, msg in messages %}
+                    <div class="flash {{ category }}">{{ msg }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('consulta.editar_consulta_action', consulta_id=consulta.id) }}" method="POST">
+        <form method="POST">
             <label>Paciente:</label>
-            <select name="id_paciente" required>
-                {% for paciente in pacientes %}
-                    <option value="{{ paciente.id }}" {% if paciente.id == consulta.id_paciente %}selected{% endif %}>
-                        {{ paciente.nombre }} {{ paciente.apellido }}
-                    </option>
-                {% endfor %}
+            <select name="id_paciente" disabled>
+                <option value="{{ consulta.id_paciente }}">{{ consulta.id_paciente }}</option>
             </select>
 
-            <label>Médico:</label>
-            <select name="id_medico" required>
-                {% for medico in medicos %}
-                    <option value="{{ medico.id }}" {% if medico.id == consulta.id_medico %}selected{% endif %}>
-                        {{ medico.nombre }} {{ medico.apellido }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <label>Receta:</label>
+            <label>Receta (opcional):</label>
             <select name="id_receta">
-                <option value="">Opcional</option>
-                {% for receta in recetas %}
-                    <option value="{{ receta.id }}" {% if receta.id == consulta.id_receta %}selected{% endif %}>
-                        {{ receta.medicamentos_recetados or receta.descripcion }}
+                <option value="">--Ninguna--</option>
+                {% for r in recetas %}
+                    <option value="{{ r.id }}" {% if r.id == consulta.id_receta %}selected{% endif %}>
+                        {{ r.descripcion }}
                     </option>
                 {% endfor %}
             </select>
 
             <label>Fecha:</label>
-            <input type="datetime-local" name="fecha" value="{{ consulta.fecha|replace(' ', 'T') }}" required>
+            <input type="date" name="fecha" value="{{ consulta.fecha }}" required>
 
             <label>Comentarios:</label>
-            <textarea name="comentarios" rows="4">{{ consulta.comentarios }}</textarea>
+            <textarea name="comentarios">{{ consulta.comentarios }}</textarea>
 
             <label>Valor:</label>
-            <input type="number" name="valor" value="{{ consulta.valor }}" required>
+            <input type="number" name="valor" step="0.01" value="{{ consulta.valor }}">
 
-            <button type="submit">Actualizar</button>
+            <button type="submit">Actualizar Consulta</button>
         </form>
 
-        <a href="{{ url_for('consulta.listar_consultas') }}">Volver a la lista</a>
+        <form action="{{ url_for('consulta_bp.eliminar_consulta', consulta_id=consulta.id) }}" method="POST">
+            <button type="submit" onclick="return confirm('¿Eliminar esta consulta?')">Eliminar Consulta</button>
+        </form>
+
+        <a href="{{ url_for('consulta_bp.listar_consultas') }}" class="menu-button">Volver</a>
     </div>
 </body>
 </html>

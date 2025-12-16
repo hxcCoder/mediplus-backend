@@ -1,78 +1,71 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from middleware.auth import login_required
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from middleware.auth import login_required, medico_required
 from controller.consulta_c import ConsultaController
-from models.consulta import Consulta
 from dao.paciente_dao import PacienteDAO
-from dao.medico_dao import MedicoDAO
 from dao.receta_dao import RecetaDAO
+from models.consulta import Consulta
 
-consulta_bp = Blueprint("consulta", __name__)
+consulta_bp = Blueprint("consulta_bp", __name__, url_prefix="/consultas")
 controller = ConsultaController()
 
-
-@consulta_bp.route("/consultas", methods=["GET"])
+@consulta_bp.route("/", methods=["GET"])
 @login_required
+@medico_required
 def listar_consultas():
-    consultas = controller.listar()
+    id_medico = session["usuario_id"]
+    consultas = controller.listar(id_medico)
     return render_template("consultas/listar_consultas.html", consultas=consultas)
 
-
-@consulta_bp.route("/consulta/nueva", methods=["GET", "POST"])
+@consulta_bp.route("/crear", methods=["GET", "POST"])
 @login_required
+@medico_required
 def crear_consulta():
     if request.method == "POST":
-        data = {
-            "id_paciente": request.form.get("id_paciente"),
-            "id_medico": request.form.get("id_medico"),
-            "id_receta": request.form.get("id_receta"),
-            "fecha": request.form.get("fecha"),
-            "comentarios": request.form.get("comentarios"),
-            "valor": request.form.get("valor")
-        }
-        consulta = Consulta(**data)
-        ok = controller.crear_consulta(consulta)
+        data = request.form
+        consulta = Consulta(
+            id=None,
+            id_paciente=int(data["id_paciente"]),
+            id_medico=session["usuario_id"],
+            id_receta=int(data["id_receta"]) if data.get("id_receta") else None,
+            fecha=data["fecha"],
+            comentarios=data.get("comentarios", ""),
+            valor=float(data.get("valor", 0))
+        )
+        ok = controller.crear(consulta)
         flash("Consulta creada" if ok else "Error al crear consulta")
-        return redirect(url_for("consulta.listar_consultas"))
-    # GET -> pasar listas para selects
+        return redirect(url_for("consulta_bp.listar_consultas"))
+
     pacientes = PacienteDAO().listar()
-    medicos = MedicoDAO().listar()
     recetas = RecetaDAO().listar_todas()
-    return render_template("consultas/crear_consulta.html", pacientes=pacientes, medicos=medicos, recetas=recetas)
+    return render_template("consultas/crear_consulta.html", pacientes=pacientes, recetas=recetas)
 
-
-@consulta_bp.route("/consulta/eliminar/<int:id_consulta>", methods=["POST"])
+@consulta_bp.route("/editar/<int:consulta_id>", methods=["GET", "POST"])
 @login_required
-def eliminar_consulta(id_consulta):
-    try:
-        success = controller.eliminar(id_consulta)
-        flash("Consulta eliminada" if success else "Error al eliminar consulta")
-    except Exception as e:
-        flash(str(e))
-    return redirect(url_for("consulta.listar_consultas"))
-
-
-@consulta_bp.route("/consulta/editar/<int:consulta_id>", methods=["GET", "POST"])
-@login_required
-def editar_consulta_action(consulta_id):
+@medico_required
+def editar_consulta(consulta_id):
     consulta = controller.obtener_por_id(consulta_id)
     if not consulta:
-        flash("Consulta no encontrada")
-        return redirect(url_for("consulta.listar_consultas"))
+        flash("Consulta no encontrada", "error")
+        return redirect(url_for("consulta_bp.listar_consultas"))
 
     if request.method == "POST":
-        consulta.comentarios = request.form.get("comentarios", consulta.comentarios)
-        consulta.fecha = request.form.get("fecha", consulta.fecha)
-        consulta.valor = request.form.get("valor", consulta.valor)
-
-        try:
-            controller.actualizar_consulta(consulta)
-            flash("Consulta actualizada")
-        except Exception as e:
-            flash(str(e))
-
-        return redirect(url_for("consulta.listar_consultas"))
+        data = request.form
+        consulta.comentarios = data.get("comentarios", consulta.comentarios)
+        consulta.fecha = data.get("fecha", consulta.fecha)
+        consulta.valor = float(data.get("valor", consulta.valor))
+        consulta.id_receta = int(data["id_receta"]) if data.get("id_receta") else None
+        ok = controller.actualizar(consulta)
+        flash("Consulta actualizada" if ok else "Error al actualizar")
+        return redirect(url_for("consulta_bp.listar_consultas"))
 
     pacientes = PacienteDAO().listar()
-    medicos = MedicoDAO().listar()
     recetas = RecetaDAO().listar_todas()
-    return render_template("consultas/editar_consulta.html", consulta=consulta, pacientes=pacientes, medicos=medicos, recetas=recetas)
+    return render_template("consultas/editar_consulta.html", consulta=consulta, pacientes=pacientes, recetas=recetas)
+
+@consulta_bp.route("/eliminar/<int:consulta_id>", methods=["POST"])
+@login_required
+@medico_required
+def eliminar_consulta(consulta_id):
+    ok = controller.eliminar(consulta_id)
+    flash("Consulta eliminada" if ok else "Error al eliminar")
+    return redirect(url_for("consulta_bp.listar_consultas"))

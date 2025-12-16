@@ -10,7 +10,7 @@
 
     <form method="POST" action="{{ url_for('insumo.eliminar_insumo', insumo_id=insumo.id) }}">
         <button type="submit" style="background-color:red;color:white;">Sí, eliminar</button>
-        <a href="{{ url_for('insumo.listar_insumos') }}">Cancelar</a>
+        <a href="{{ url_for('insumo_bp.listar_insumos') }}">Cancelar</a>
     </form>
 </body>
 </html>

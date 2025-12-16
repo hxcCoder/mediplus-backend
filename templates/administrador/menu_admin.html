@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Administrador - MediPlus</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Saludo al usuario -->
+        <h2>Bienvenido, {{ username }}</h2>
+
+        <!-- Mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="flash {{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Menú de acciones -->
+        <div class="menu">
+            <a href="{{ url_for('usuario.listar_usuarios_api') }}" class="menu-button">Gestionar Usuarios</a>
+            <a href="{{ url_for('agenda_bp.listar_agenda') }}" class="menu-button">Gestionar Consultas</a>
+            <a href="{{ url_for('receta_bp.listar_recetas') }}" class="menu-button">Gestionar Recetas</a>
+            <a href="{{ url_for('insumo_bp.listar_insumos') }}" class="menu-button">Gestionar Insumos</a>
+        </div>
+
+        <!-- Tabla de administradores -->
+        <h3>Administradores registrados</h3>
+        {% if administradores %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admin in administradores %}
+                <tr>
+                    <td>{{ admin.id }}</td>
+                    <td>{{ admin.nombre_usuario }}</td>
+                    <td>{{ admin.nombre }}</td>
+                    <td>{{ admin.apellido }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_bp.editar_administrador', admin_id=admin.id) }}" class="action-button">Editar</a>
+                        <a href="{{ url_for('admin_bp.eliminar_administrador', admin_id=admin.id) }}" class="action-button" onclick="return confirm('¿Seguro que deseas eliminar este administrador?');">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p>No hay administradores registrados.</p>
+        {% endif %}
+
+        <!-- Logout -->
+        <div class="logout-container">
+            <a href="{{ url_for('login.logout') }}" class="logout menu-button">Cerrar sesión</a>
+        </div>
+    </div>
+</body>
+</html>

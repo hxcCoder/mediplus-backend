@@ -1,6 +1,16 @@
+from typing import Optional
+
 class Consulta:
-    def __init__(self, id=None, id_paciente=None, id_medico=None, id_receta=None,
-                fecha=None, comentarios=None, valor=None):
+    def __init__(
+        self,
+        id: Optional[int],
+        id_paciente: int,
+        id_medico: int,
+        id_receta: Optional[int],
+        fecha: str,
+        comentarios: str,
+        valor: float
+    ):
         self.id = id
         self.id_paciente = id_paciente
         self.id_medico = id_medico

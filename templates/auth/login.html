@@ -1,40 +1,31 @@
-<!-- templates/auth/login.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Login - MediPlus</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-        .container { max-width: 400px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; }
-        h2 { text-align: center; margin-bottom: 20px; }
-        input { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
-        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .flash { color: red; margin-bottom: 10px; text-align: center; }
-        a { text-decoration: none; color: #007bff; display: block; text-align: center; margin-top: 10px; }
-        a:hover { color: #0056b3; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
         <h2>Iniciar Sesión</h2>
 
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for msg in messages %}
-                    <div class="flash">{{ msg }}</div>
+                {% for category, msg in messages %}
+                    <div class="flash {{ category }}">{{ msg }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <form method="POST" action="{{ url_for('login.login_action') }}">
-            <input type="text" name="nombre_usuario" placeholder="Nombre de usuario" required>
-            <input type="password" name="clave" placeholder="Contraseña" required>
-            <button type="submit">Iniciar Sesión</button>
+        <form method="POST" action="{{ url_for('login.login_action') }}" class="form-box">
+            <input type="text" name="nombre_usuario" placeholder="Nombre de usuario" required class="form-input">
+            <input type="password" name="clave" placeholder="Contraseña" required class="form-input">
+            <button type="submit" class="menu-button">Iniciar Sesión</button>
         </form>
 
-        <a href="{{ url_for('registro.register_form') }}">¿No tienes cuenta? Regístrate</a>
+        <p class="form-footer">
+            ¿No tienes cuenta? <a href="{{ url_for('registro.register_form') }}">Regístrate</a>
+        </p>
     </div>
 </body>
 </html>

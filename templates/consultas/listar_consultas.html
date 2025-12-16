@@ -1,28 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <title>Listado de Consultas</title>
+    <meta charset="UTF-8">
+    <title>Listado de Consultas - MediPlus</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h2>Consultas</h2>
-    <a href="{{ url_for('consulta.crear_consulta') }}">Crear Consulta</a>
-    <table border="1">
-        <tr><th>ID</th><th>Paciente</th><th>Médico</th><th>Fecha</th><th>Valor</th><th>Acciones</th></tr>
-        {% for c in consultas %}
-        <tr>
-            <td>{{ c.id }}</td>
-            <td>{{ c.id_paciente }}</td>
-            <td>{{ c.id_medico }}</td>
-            <td>{{ c.fecha }}</td>
-            <td>{{ c.valor | format_clp }}</td>
-            <td>
-                <form method="POST" action="{{ url_for('consulta.eliminar_consulta', id_consulta=c.id) }}" style="display:inline">
-                    <button type="submit">Eliminar</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="container">
+        <h2>Consultas</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="flash {{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <a href="{{ url_for('consulta_bp.crear_consulta') }}" class="menu-button">Nueva Consulta</a>
+
+        {% if consultas %}
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Receta</th>
+                        <th>Fecha</th>
+                        <th>Comentarios</th>
+                        <th>Valor</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in consultas %}
+                    <tr>
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.id_paciente }}</td>
+                        <td>{{ c.id_receta or "-" }}</td>
+                        <td>{{ c.fecha }}</td>
+                        <td>{{ c.comentarios }}</td>
+                        <td>{{ c.valor }}</td>
+                        <td>
+                            <a href="{{ url_for('consulta_bp.editar_consulta', consulta_id=c.id) }}">Editar</a>
+                            <form action="{{ url_for('consulta_bp.eliminar_consulta', consulta_id=c.id) }}" method="POST" style="display:inline-block;">
+                                <button type="submit" onclick="return confirm('¿Eliminar esta consulta?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay consultas registradas.</p>
+        {% endif %}
+
+        <a href="{{ url_for('menu_medico.menu') }}" class="menu-button">Volver al Menú</a>
+    </div>
 </body>
 </html>

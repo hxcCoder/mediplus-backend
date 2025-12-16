@@ -1,13 +1,11 @@
 from functools import wraps
 from flask import session, jsonify, request, redirect, url_for, flash
 
-
 def login_required(f):
     """Verifica que el usuario esté autenticado."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        user = session.get("user") or {"id": session.get("user_id"), "tipo": session.get("tipo")}
-        if not user.get("id"):
+        if not session.get("usuario_id"):
             if request.accept_mimetypes.accept_html:
                 flash("Debes iniciar sesión")
                 return redirect(url_for("login.login_form"))
@@ -15,21 +13,15 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-
 def role_required(*roles):
-    """
-    Verifica que el usuario tenga uno de los roles permitidos.
-    Uso: @role_required("admin"), @role_required("medico", "admin")
-    """
+    """Verifica que el usuario tenga uno de los roles permitidos."""
     roles = [r.lower() for r in roles]
 
     def decorator(f):
         @wraps(f)
         def decorated(*args, **kwargs):
-            user = session.get("user") or {"id": session.get("user_id"), "tipo": session.get("tipo")}
-            tipo = str(user.get("tipo", "")).lower()
-
-            if not user.get("id"):
+            tipo = str(session.get("usuario_tipo", "")).lower()
+            if not session.get("usuario_id"):
                 if request.accept_mimetypes.accept_html:
                     flash("Debes iniciar sesión")
                     return redirect(url_for("login.login_form"))
@@ -45,8 +37,6 @@ def role_required(*roles):
         return decorated
     return decorator
 
-
-# Alias para compatibilidad
 admin_required = role_required("admin")
 medico_required = role_required("medico")
 paciente_required = role_required("paciente")

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Receta</title>
+</head>
+<body>
+
+<h2>Crear Receta</h2>
+
+<form method="post">
+    <label>ID Paciente:</label><br>
+    <input type="number" name="id_paciente" required><br><br>
+
+    <label>ID Médico:</label><br>
+    <input type="number" name="id_medico" required><br><br>
+
+    <label>Descripción:</label><br>
+    <textarea name="descripcion" required></textarea><br><br>
+
+    <label>Medicamentos Recetados:</label><br>
+    <textarea name="medicamentos_recetados" required></textarea><br><br>
+
+    <label>Costo (CLP):</label><br>
+    <input type="number" name="costo_clp" required><br><br>
+
+    <label>Fecha:</label><br>
+    <input type="date" name="fecha" required><br><br>
+
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+<a href="{{ url_for('receta_bp.listar_recetas') }}">⬅ Volver</a>
+
+</body>
+</html>
